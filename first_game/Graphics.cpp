@@ -1,5 +1,4 @@
 #include "Graphics.h"
-
 Graphics::Graphics(int width, int height, const char *title)
 {
 	int retval = SDL_Init(SDL_INIT_EVERYTHING);
@@ -17,7 +16,7 @@ Image* Graphics::NewImage(char* file)
 	SDL_Surface* tmp = IMG_Load(file);
 	Image* image = new Image();
 	image->texture = SDL_CreateTextureFromSurface(Renderer, tmp);
-	image->h=tmp->h;
+	image->h=tmp->h; 
 	image->w=tmp->w;
 	SDL_FreeSurface(tmp);
 	return image;

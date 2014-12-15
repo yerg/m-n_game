@@ -1,6 +1,5 @@
 #include "Project.h"
 const int GRID_SIZE = 300;
-
 class TicTacToeScreen : public Screen
 {
 private:
@@ -10,7 +9,6 @@ private:
 	// »зображени€ фона, крестиков и ноликов
 	Image* back;
 	(Image* player)[2];
-
 	// ћассив, обозначающий поле, и текущий игрок
 	int grid[3][3], currplayer;
 	void StartSettings()
@@ -28,6 +26,7 @@ private:
 		back = graphics->NewImage("fon.bmp");
 		player[0] = graphics->NewImage("X.bmp",255,255,255);
 		player[1] = graphics->NewImage("O.bmp",255,255,255);
+
 	}
 
 	void Reset()
