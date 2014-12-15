@@ -2,7 +2,7 @@
 #define _GRAPHICS_H_
 
 #include "Project.h"
-
+#include "SDL_image.h"
 #include "Image.h"
 class Image;
 

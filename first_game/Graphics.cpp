@@ -14,7 +14,7 @@ Graphics::Graphics(int width, int height, const char *title)
 
 Image* Graphics::NewImage(char* file)
 {
-	SDL_Surface* tmp = SDL_LoadBMP(file);
+	SDL_Surface* tmp = IMG_Load(file);
 	Image* image = new Image();
 	image->texture = SDL_CreateTextureFromSurface(Renderer, tmp);
 	image->h=tmp->h;
@@ -25,7 +25,7 @@ Image* Graphics::NewImage(char* file)
 
 Image* Graphics::NewImage(char* file, int r, int g, int b)
 {
-	SDL_Surface* tmp = SDL_LoadBMP(file);
+	SDL_Surface* tmp = IMG_Load(file);
 	Image* image = new Image();
 	SDL_SetColorKey(tmp, SDL_TRUE, SDL_MapRGB(tmp->format, r, g, b));
 	image->texture = SDL_CreateTextureFromSurface(Renderer, tmp);
