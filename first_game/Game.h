@@ -9,8 +9,6 @@ class Graphics;
 class Input;
 #include "Screen.h"
 class Screen;
-#include "Munchkin.h"
-class Munchkin;
 class Game
 {
 private:

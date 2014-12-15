@@ -42,14 +42,14 @@ void Munchkin::LoadingImage()
 		strcat(filename,letter);
 		strcat(filename,".jpg");
 
-		card_map[i]=graphics->NewImage(filename);
+		card_map[i]=graphics->NewImage(filename,255,255,255);
 	}
 
 }
 void Munchkin::SomeDraw(){
 
-	ShowCard(15,5,5);
-	ShowCard(145,600,300);
+	ShowCard(0,5,5);
+	ShowCard(169,600,300);
 	graphics->Flip();
 }
 
