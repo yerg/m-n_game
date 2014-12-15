@@ -1,5 +1,6 @@
 #include "Project.h"
 const int GRID_SIZE = 300;
+
 class TicTacToeScreen : public Screen
 {
 private:
@@ -174,9 +175,9 @@ public:
 	}
 };
 
-
+class Munchkin;
 int main(int argc, char* argv[])
 {
 	Game game;
-	return game.Execute(new TicTacToeScreen(),GRID_SIZE,GRID_SIZE,"Tic-Tac-Toe");
+	return game.Execute(new Munchkin(),1200,600,"Munchkin");
 }

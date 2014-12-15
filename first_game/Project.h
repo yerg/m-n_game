@@ -6,6 +6,5 @@
 #include "Game.h"
 #include "Graphics.h"
 #include "Image.h"
-//#include "Munchkin.h"
-
+#include "Munchkin.h"
 #endif
