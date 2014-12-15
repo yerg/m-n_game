@@ -57,6 +57,8 @@ bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int e
 	SDL_Rect Area;
 	Area.x = x;
 	Area.y = y;
+	Area.w = endX-startX;
+	Area.h = endY-startY;
 
 	SDL_Rect SrcArea;
 	SrcArea.x = startX;

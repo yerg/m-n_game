@@ -4,7 +4,7 @@
 
 #include <SDL.h>
 #include <cstring>
-
+#include <iostream>
 #include "Game.h"
 #include "Graphics.h"
 #include "Image.h"

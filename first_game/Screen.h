@@ -5,6 +5,10 @@
 
 #include "Game.h"
 class Game;
+#include "Image.h"
+class Image;
+#include "Graphics.h"
+class Graphics;
 
 class Screen
 {
@@ -18,4 +22,20 @@ public:
 	virtual void Destroy();
 };
 
+
+class Munchkin : public Screen
+{
+private:
+	Input* input;
+	Graphics* graphics;
+	(Image* card_map)[17];
+	int currplayer, totalplayers;
+	void ShowCard(int id, int x, int y);
+	void StartSettings();
+	void LoadingImage();
+	void SomeDraw();
+public:
+	void Start();
+	void Update();
+};
 #endif
