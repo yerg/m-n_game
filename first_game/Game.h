@@ -1,5 +1,5 @@
-#ifndef _GAME_H_
-#define _GAME_H_
+#ifndef GAME_H
+#define GAME_H
 
 #include "Project.h"
 
@@ -9,7 +9,8 @@ class Graphics;
 class Input;
 #include "Screen.h"
 class Screen;
-
+#include "Munchkin.h"
+class Munchkin;
 class Game
 {
 private:

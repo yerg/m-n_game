@@ -1,8 +1,8 @@
-#ifndef _MUNCHKIN_H_
-#define _MUNCHKIN_H_
+#ifndef MUNCHKIN_H
+#define MUNCHKIN_H
 
 #include "Project.h"
-#include <cstring>
-//#include "Game.h"
-//class Game;
+
+
+
 #endif

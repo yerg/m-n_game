@@ -1,5 +1,5 @@
-#ifndef _GRAPHICS_H_
-#define _GRAPHICS_H_
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
 
 #include "Project.h"
 #include "SDL_image.h"

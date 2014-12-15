@@ -1,10 +1,13 @@
-#ifndef _PROJECT_H_
-#define _PROJECT_H_
+#ifndef PROJECT_H
+#define PROJECT_H
 
 
 #include <SDL.h>
+#include <cstring>
+
 #include "Game.h"
 #include "Graphics.h"
 #include "Image.h"
 #include "Munchkin.h"
+
 #endif
