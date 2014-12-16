@@ -49,7 +49,7 @@ bool Graphics::DrawImage(Image* img, int x, int y)
 	return true;
 }
 
-bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int endX, int endY)
+bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int endX, int endY, int w, int h)
 {
 	if(mainWindow == NULL || img->texture == NULL)
 		return false;
@@ -57,8 +57,8 @@ bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int e
 	SDL_Rect Area;
 	Area.x = x;
 	Area.y = y;
-	Area.w = endX-startX;
-	Area.h = endY-startY;
+	Area.w = w;
+	Area.h = h;
 
 	SDL_Rect SrcArea;
 	SrcArea.x = startX;
@@ -68,6 +68,12 @@ bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int e
 
 	SDL_RenderCopy(Renderer, img->texture, &SrcArea, &Area);
 	return true;
+}
+bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int endX, int endY, double scale=1.0) 
+{
+	int w = (endX-startX)*scale;
+	int h = (endY-startY)*scale;
+	DrawImage(img,x,y,startX,startY,endX,endY,w,h);
 }
 
 void Graphics::Flip()
