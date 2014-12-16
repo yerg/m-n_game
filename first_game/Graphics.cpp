@@ -2,11 +2,7 @@
 Graphics::Graphics(int width, int height, const char *title)
 {
 	int retval = SDL_Init(SDL_INIT_EVERYTHING);
-/*	if (retval)            //Сделать проверку на ошибки;
-	{
-		throw (SDL_GetError());
-	}*/
-
+	if (retval) std::cout<<std::endl<<SDL_GetError();
 	mainWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,	width, height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 	Renderer = SDL_CreateRenderer(mainWindow, -1, 0);
 }
