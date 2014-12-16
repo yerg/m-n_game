@@ -10,9 +10,8 @@ class Graphics
 {
 private:
 	SDL_Renderer* Renderer;
-	SDL_Window* mainWindow;
 public:
-
+	SDL_Window* mainWindow;
 	Graphics(int width, int height, const char *title);
 	Image* NewImage(char* file);
 	Image* NewImage(char* file, int r, int g, int b);

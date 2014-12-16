@@ -30,7 +30,9 @@ private:
 	Graphics* graphics;
 	(Image* card_map)[17];
 	int currplayer, totalplayers;
+	int wW,wH;
 	void ShowCard(int id, int x, int y);
+	void ZoomCard(int id);
 	void StartSettings();
 	void LoadingImage();
 	void SomeDraw();
