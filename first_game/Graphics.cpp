@@ -65,11 +65,11 @@ bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int e
 	SDL_RenderCopy(Renderer, img->texture, &SrcArea, &Area);
 	return true;
 }
-bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int endX, int endY, double scale=1.0) 
+bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int endX, int endY, double scale) 
 {
-	int w = (endX-startX)*scale;
-	int h = (endY-startY)*scale;
-	DrawImage(img,x,y,startX,startY,endX,endY,w,h);
+	int w = static_cast<double>(endX-startX)*scale;
+	int h = static_cast<double>(endY-startY)*scale;
+	return DrawImage(img,x,y,startX,startY,endX,endY,w,h);
 }
 
 void Graphics::Flip()
