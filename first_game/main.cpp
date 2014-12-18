@@ -1,5 +1,5 @@
 #include "Project.h"
-const int WINDOWH = 650;
+const int WINDOWH = 482;
 int main(int argc, char* argv[])
 {
 	Game game;

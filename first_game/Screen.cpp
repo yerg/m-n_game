@@ -35,6 +35,7 @@ void Munchkin::StartSettings()
 {
 	input = game->GetInput();
 	graphics = game->GetGraphics();
+	
 }
 
 void Munchkin::LoadingImage()

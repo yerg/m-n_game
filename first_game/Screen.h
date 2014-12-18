@@ -36,6 +36,14 @@ private:
 	void StartSettings();
 	void LoadingImage();
 	void SomeDraw();
+	std::queue<int> doors,treasures,rd,rt;
+	std::list<int> monster;
+	std::list<int> helper;
+	struct Player{
+		std::list<int> hand, equip, desk;
+		int level;
+		bool gender;	
+	};
 public:
 	void Start();
 	void Update();
