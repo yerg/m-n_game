@@ -16,8 +16,8 @@ public:
 	Image* NewImage(char* file);
 	Image* NewImage(char* file, int r, int g, int b);
 	bool DrawImage(Image* img, int x, int y);
-	bool DrawImage(Image* img, int x, int y, int startX, int startY, int endX, int endY, int w, int h);
-	bool DrawImage(Image* img, int x, int y, int startX, int startY, int endX, int endY, double scale=1.0);
+	bool DrawImage(Image* img, int x, int y, int startX, int startY, int srcW, int srcH, int w, int h);
+	bool DrawImage(Image* img, int x, int y, int startX, int startY, int srcW, int srcH, double scale=1.0);
 	void Flip();
 };
 

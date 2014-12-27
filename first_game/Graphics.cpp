@@ -45,7 +45,7 @@ bool Graphics::DrawImage(Image* img, int x, int y)
 	return true;
 }
 
-bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int endX, int endY, int w, int h)
+bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int srcW, int srcH, int w, int h)
 {
 	if(mainWindow == NULL || img->texture == NULL)
 		return false;
@@ -59,17 +59,17 @@ bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int e
 	SDL_Rect SrcArea;
 	SrcArea.x = startX;
 	SrcArea.y = startY;
-	SrcArea.w = endX;
-	SrcArea.h = endY;
+	SrcArea.w = srcW;
+	SrcArea.h = srcH;
 
 	SDL_RenderCopy(Renderer, img->texture, &SrcArea, &Area);
 	return true;
 }
-bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int endX, int endY, double scale) 
+bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int srcW, int srcH, double scale) 
 {
-	int w = static_cast<double>(endX-startX)*scale;
-	int h = static_cast<double>(endY-startY)*scale;
-	return DrawImage(img,x,y,startX,startY,endX,endY,w,h);
+	int w = static_cast<double>(srcW)*scale;
+	int h = static_cast<double>(srcH)*scale;
+	return DrawImage(img,x,y,startX,startY,srcW,srcH,w,h);
 }
 
 void Graphics::Flip()
