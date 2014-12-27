@@ -54,6 +54,7 @@ void Munchkin::ShowPlayer(){
 	ShowBackLine(plr[cp].hand, plr[cp].hi, 10.0);
 }
 
+
 void Munchkin::StartSettings()
 {
 	input = game->GetInput();
@@ -94,11 +95,6 @@ void Munchkin::Start()
 {
 	StartSettings();
 	LoadingImage();
-	srand(time(NULL));
-	doors.reserve(95);
-	for(int i=0; i<95;i++) doors.push_back(i);
-	treasures.reserve(75);
-	for(int i=95; i<170;i++) doors.push_back(i);
 	SomeDraw();
 }
 void Munchkin::Update()
