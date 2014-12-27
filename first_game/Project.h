@@ -5,8 +5,8 @@
 #include <SDL.h>
 #include <cstring>
 #include <iostream>
-#include <list>
-#include <queue>
+#include <vector>
+#include <algorithm>
 #include "Game.h"
 #include "Graphics.h"
 #include "Image.h"

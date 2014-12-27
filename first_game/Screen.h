@@ -23,27 +23,37 @@ public:
 };
 
 
+class Player{
+public:
+	std::vector<int> hand, equip, desk;
+	int hi, ei, di;
+	int level;
+	bool gender;
+	Player():hi(0),ei(0),di(0),level(1),gender(true){hand.reserve(10); equip.reserve(10); desk.reserve(10);};
+	};
 class Munchkin : public Screen
 {
 private:
 	Input* input;
 	Graphics* graphics;
 	(Image* card_map)[17];
-	int currplayer, totalplayers;
+	int cp, totalplayers;
 	int wW,wH;
+	Player plr[2];
+
 	void ShowCard(int id, int x, int y);
+	void ShowCurPlayer();
 	void ZoomCard(int id);
+
 	void StartSettings();
 	void LoadingImage();
+
 	void SomeDraw();
-	std::queue<int> doors,treasures,rd,rt;
-	std::list<int> monster;
-	std::list<int> helper;
-	struct Player{
-		std::list<int> hand, equip, desk;
-		int level;
-		bool gender;	
-	};
+	
+	std::vector<int> doors,treasures,rd,rt;
+	std::vector<int> monster;
+	std::vector<int> helper;	
+	
 public:
 	void Start();
 	void Update();
