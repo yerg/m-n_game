@@ -56,10 +56,11 @@ private:
 	Player plr[2];
 
 	void ShowCard(int id, int x, int y);
+	void ShowBack(int id, int x, int y);
 	void ZoomCard(int id);
-	void ShowBackLine(std::vector<int> &, unsigned int, double);
+
 	void FillMap();
-	void FillLine(std::vector<int> &, unsigned int, double);
+	void FillLine(std::vector<int> &, unsigned int, double, mWMap &);
 	void ShowMap();
 
 	void StartSettings();
@@ -71,7 +72,7 @@ private:
 	std::vector<int> monster;
 	std::vector<int> helper;
 	std::vector<int>::iterator iToMove;
-	mWMap windowMap;
+	mWMap windowMap, backMap;
 	
 public:
 	void Start();

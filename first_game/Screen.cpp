@@ -52,35 +52,34 @@ void Munchkin::ShowCard(int id, int x, int y){
 	graphics->DrawImage(card_map[id/10], x, y, (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0, mapW/5, mapH/2, cW, cH);
 }
 
+void Munchkin::ShowBack(int id, int x, int y){
+	graphics->DrawImage(back, x, y, 0, id<95 ? 0 : mapH/2, mapW/5, mapH/2, cW, cH);
+}
 
 void Munchkin::ZoomCard(int id){
 	graphics->DrawImage(card_map[id/10], wW-cardRatio*wH, 0, (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0, mapW/5, mapH/2, cardRatio*wH, wH);
 }
 
-void Munchkin::ShowBackLine(std::vector<int> &v, unsigned int pos, double col){
-	for(int i=0; (i<5)&&(i<v.size()); i++){
-		graphics->DrawImage(back, cW*col, (0.25+i)*(cH), 0, v.at((pos+i)%v.size())<95 ? 0 : mapH/2, mapW/5, mapH/2, cW, cH);
-	}
-}
 
-void Munchkin::FillLine(std::vector<int> &v, unsigned int pos, double col){
+
+void Munchkin::FillLine(std::vector<int> &v, unsigned int pos, double col, mWMap &mWMapInstance){
 	std::vector<int>::iterator it;
 	for(int i=0; (i<5)&&(i<v.size()); i++){
 		it=v.begin()+((pos+i)%v.size());
-		windowMap[it]=std::make_pair(cW*col, (0.25+i)*(cH));
+		mWMapInstance[it]=std::make_pair(cW*col, (0.25+i)*(cH));
 	}
 }
 
 void Munchkin::FillMap(){
 	windowMap.clear();
+	backMap.clear();
+	FillLine(plr[cp].hand, plr[cp].hi, 0.1, windowMap);
+	FillLine(plr[cp].equip, plr[cp].ei, 1.2, windowMap);
+	FillLine(plr[cp].desk, plr[cp].di, 2.3, windowMap);
 
-	FillLine(plr[cp].hand, plr[cp].hi, 0.1);
-	FillLine(plr[cp].equip, plr[cp].ei, 1.2);
-	FillLine(plr[cp].desk, plr[cp].di, 2.3);
-
-	FillLine(plr[cp].desk, plr[cp].di, 7.8);
-	FillLine(plr[cp].equip, plr[cp].ei, 8.9);
-	FillLine(plr[cp].hand, plr[cp].hi, 10.0);
+	FillLine(plr[cp].desk, plr[cp].di, 7.8, windowMap);
+	FillLine(plr[cp].equip, plr[cp].ei, 8.9, windowMap);
+	FillLine(plr[cp].hand, plr[cp].hi, 10.0, backMap);
 
 }
 
@@ -88,6 +87,9 @@ void Munchkin::ShowMap(){
 	FillMap();
 	for(mWMap::iterator it=windowMap.begin(); it != windowMap.end(); ++it){
 		ShowCard(*it->first, it->second.first, it->second.second);
+	}
+	for(mWMap::iterator it=backMap.begin(); it != backMap.end(); ++it){
+		ShowBack(*it->first, it->second.first, it->second.second);
 	}
 }
 
