@@ -77,9 +77,9 @@ void Munchkin::FillMap(){
 	FillLine(plr[cp].equip, plr[cp].ei, 1.2, windowMap);
 	FillLine(plr[cp].desk, plr[cp].di, 2.3, windowMap);
 
-	FillLine(plr[cp].desk, plr[cp].di, 7.8, windowMap);
-	FillLine(plr[cp].equip, plr[cp].ei, 8.9, windowMap);
-	FillLine(plr[cp].hand, plr[cp].hi, 10.0, backMap);
+	FillLine(plr[ep].desk, plr[cp].di, 7.8, windowMap);
+	FillLine(plr[ep].equip, plr[cp].ei, 8.9, windowMap);
+	FillLine(plr[ep].hand, plr[cp].hi, 10.0, backMap);
 
 }
 
@@ -100,7 +100,7 @@ bool Munchkin::FindCard::operator()(const pWMap &a) const{
 void Munchkin::ReDraw(){
 	graphics->GetWindowSize(wW, wH);
 	cH=wH/5.5;
-	cW=cardRatio*static_cast<double>(cH);
+	cW=cardRatio*cH;
 	ShowMap();
 	if((zoomed>=0)&&(zoomed<170)) ZoomCard(zoomed);
 	graphics->Flip();
@@ -130,13 +130,13 @@ void Munchkin::Start()
 
 void Munchkin::Update()
 {
-	int x,y;
+	int x, y;
 	if(input->IsExit()) game->Exit();
 	if(input->IsMouseButtonDown(3)) {
 		x=input->GetButtonDownCoords().x;
 		y=input->GetButtonDownCoords().y;
 		mWMap::iterator it = find_if(windowMap.begin(),windowMap.end(),FindCard(x,y,cW,cH));
-		if (it!=windowMap.end()) zoomed=*(it->first);
+		if (it!=windowMap.end()) zoomed = *(it->first);
 	}
 //	if(input->IsMouseButtonDown(1)) ;
 	ReDraw();

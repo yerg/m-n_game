@@ -32,6 +32,7 @@ public:
 	bool gender;
 	Player():hi(0),ei(0),di(0),level(1),gender(true){hand.reserve(10); equip.reserve(10); desk.reserve(10);};
 };
+
 typedef std::pair<std::vector<int>::iterator, std::pair<int,int>> pWMap;
 typedef std::map<std::vector<int>::iterator, std::pair<int,int>> mWMap;
 
