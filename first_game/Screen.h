@@ -22,6 +22,8 @@ public:
 	virtual void Destroy();
 };
 
+
+
 class Player{
 public:
 	std::vector<int> hand, equip, desk;
@@ -33,6 +35,12 @@ public:
 
 class Munchkin : public Screen
 {
+	struct FindCard{
+		FindCard(int x, int y, int w, int h) : x_(x), y_(y), w_(w), h_(h){}
+		bool operator()(const std::pair<std::vector<int>::iterator, std::pair<int,int>> &a) const;
+	private:
+		int x_, y_, w_, h_;
+	};
 private:
 	Input* input;
 	Graphics* graphics;
@@ -47,9 +55,10 @@ private:
 
 	void ShowCard(int id, int x, int y);
 	void ZoomCard(int id);
-	void ShowLine(std::vector<int> &, unsigned int, double);
 	void ShowBackLine(std::vector<int> &, unsigned int, double);
-	void ShowPlayers();
+	void FillMap();
+	void FillLine(std::vector<int> &, unsigned int, double);
+	void ShowMap();
 
 	void StartSettings();
 	void LoadingImage();
@@ -58,10 +67,11 @@ private:
 	
 	std::vector<int> doors,treasures,rd,rt;
 	std::vector<int> monster;
-	std::vector<int> helper;	
+	std::vector<int> helper;
+	std::vector<int>::iterator iToMove;
+	std::map<std::vector<int>::iterator, std::pair<int,int>> windowMap;
 	
 public:
-
 	void Start();
 	void Update();
 };
