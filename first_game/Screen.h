@@ -39,7 +39,10 @@ private:
 	(Image* card_map)[17];
 	Image* back;
 	int cp, ep, totalplayers, zoomed;
-	int wW,wH;
+
+	int wW,wH, mapW, mapH;
+	double cardRatio;
+
 	Player plr[2];
 
 	void ShowCard(int id, int x, int y);
