@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include <cstring>
 #include <iostream>
+#include <ctime>
 #include <vector>
 #include <algorithm>
 #include "Game.h"

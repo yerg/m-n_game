@@ -38,7 +38,7 @@ private:
 	Graphics* graphics;
 	(Image* card_map)[17];
 	Image* back;
-	int cp, ep, totalplayers;
+	int cp, ep, totalplayers, zoomed;
 	int wW,wH;
 	Player plr[2];
 
@@ -46,12 +46,12 @@ private:
 	void ZoomCard(int id);
 	void ShowLine(std::vector<int> &, unsigned int, double);
 	void ShowBackLine(std::vector<int> &, unsigned int, double);
-	void ShowPlayer();
+	void ShowPlayers();
 
 	void StartSettings();
 	void LoadingImage();
 
-	void SomeDraw();
+	void ReDraw();
 	
 	std::vector<int> doors,treasures,rd,rt;
 	std::vector<int> monster;

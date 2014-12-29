@@ -44,7 +44,7 @@ void Munchkin::ShowBackLine(std::vector<int> &v, unsigned int pos, double col){
 	}
 }
 
-void Munchkin::ShowPlayer(){
+void Munchkin::ShowPlayers(){
 	ShowLine(plr[cp].hand, plr[cp].hi, 0.1);
 	ShowLine(plr[cp].equip, plr[cp].ei, 1.2);
 	ShowLine(plr[cp].desk, plr[cp].di, 2.3);
@@ -75,7 +75,7 @@ void Munchkin::LoadingImage()
 	back=graphics->NewImage("res\\back.jpg");
 
 }
-void Munchkin::SomeDraw(){
+void Munchkin::ReDraw(){
 	SDL_GetWindowSize(graphics->mainWindow, &wW, &wH);
 	cp=0; ep=1;
 	int a[]={132,12,1,66,64,153};
@@ -85,8 +85,9 @@ void Munchkin::SomeDraw(){
 	plr[cp].hand.assign(a,a+sizeof(a)/sizeof(int));
 	plr[cp].equip.assign(a,a+sizeof(a)/sizeof(int));
 	plr[cp].desk.assign(a,a+4);
-	ShowPlayer();
-	ZoomCard(132);
+	ShowPlayers();
+
+	if((zoomed>=0)&&(zoomed<170)) ZoomCard(zoomed);
 	graphics->Flip();
 }
 
@@ -99,10 +100,13 @@ void Munchkin::Start()
 	for(int i=0; i<95;i++) doors.push_back(i);
 	treasures.reserve(75);
 	for(int i=95; i<170;i++) doors.push_back(i);
-	SomeDraw();
+	ReDraw();
 }
 void Munchkin::Update()
 {
-	if(input->IsExit())
-		game->Exit();
+
+	if(input->IsExit()) game->Exit();
+	if(input->IsMouseButtonDown(3)) ;
+	if(input->IsMouseButtonDown(1)) ;
+	ReDraw();
 }
