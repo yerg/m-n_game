@@ -32,12 +32,14 @@ public:
 	bool gender;
 	Player():hi(0),ei(0),di(0),level(1),gender(true){hand.reserve(10); equip.reserve(10); desk.reserve(10);};
 };
+typedef std::pair<std::vector<int>::iterator, std::pair<int,int>> pWMap;
+typedef std::map<std::vector<int>::iterator, std::pair<int,int>> mWMap;
 
 class Munchkin : public Screen
 {
 	struct FindCard{
 		FindCard(int x, int y, int w, int h) : x_(x), y_(y), w_(w), h_(h){}
-		bool operator()(const std::pair<std::vector<int>::iterator, std::pair<int,int>> &a) const;
+		bool operator()(const pWMap &a) const;
 	private:
 		int x_, y_, w_, h_;
 	};
@@ -48,7 +50,7 @@ private:
 	Image* back;
 	int cp, ep, totalplayers, zoomed;
 
-	int wW,wH, mapW, mapH;
+	int wW,wH, cW, cH, mapW, mapH;
 	double cardRatio;
 
 	Player plr[2];
@@ -69,7 +71,7 @@ private:
 	std::vector<int> monster;
 	std::vector<int> helper;
 	std::vector<int>::iterator iToMove;
-	std::map<std::vector<int>::iterator, std::pair<int,int>> windowMap;
+	mWMap windowMap;
 	
 public:
 	void Start();

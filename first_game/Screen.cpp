@@ -49,7 +49,7 @@ void Munchkin::LoadingImage()
 }
 
 void Munchkin::ShowCard(int id, int x, int y){
-	graphics->DrawImage(card_map[id/10],   x,   y,   (id%5)*mapW/5,  (id%10)>4 ? mapH/2 : 0, mapW/5, mapH/2, cardRatio*static_cast<double>(wH/5.5), wH/5.5);
+	graphics->DrawImage(card_map[id/10], x, y, (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0, mapW/5, mapH/2, cW, cH);
 }
 
 
@@ -59,7 +59,7 @@ void Munchkin::ZoomCard(int id){
 
 void Munchkin::ShowBackLine(std::vector<int> &v, unsigned int pos, double col){
 	for(int i=0; (i<5)&&(i<v.size()); i++){
-		graphics->DrawImage(back, cardRatio*static_cast<double>(wH/5.5)*col, (0.25+i)*(wH/5.5), 0, v.at((pos+i)%v.size())<95 ? 0 : mapH/2, mapW/5, mapH/2, cardRatio*static_cast<double>(wH/5.5), wH/5.5);
+		graphics->DrawImage(back, cW*col, (0.25+i)*(cH), 0, v.at((pos+i)%v.size())<95 ? 0 : mapH/2, mapW/5, mapH/2, cW, cH);
 	}
 }
 
@@ -67,7 +67,7 @@ void Munchkin::FillLine(std::vector<int> &v, unsigned int pos, double col){
 	std::vector<int>::iterator it;
 	for(int i=0; (i<5)&&(i<v.size()); i++){
 		it=v.begin()+((pos+i)%v.size());
-		windowMap[it]=std::make_pair(cardRatio*static_cast<double>(wH/5.5)*col, (0.25+i)*(wH/5.5));
+		windowMap[it]=std::make_pair(cW*col, (0.25+i)*(cH));
 	}
 }
 
@@ -86,19 +86,20 @@ void Munchkin::FillMap(){
 
 void Munchkin::ShowMap(){
 	FillMap();
-	for(std::map<std::vector<int>::iterator, std::pair<int,int>>::iterator it=windowMap.begin(); it != windowMap.end(); ++it){
+	for(mWMap::iterator it=windowMap.begin(); it != windowMap.end(); ++it){
 		ShowCard(*it->first, it->second.first, it->second.second);
 	}
 }
 
-bool Munchkin::FindCard::operator()(const std::pair<std::vector<int>::iterator, std::pair<int,int>>&a) const{
+bool Munchkin::FindCard::operator()(const pWMap &a) const{
 	return (x_ >= a.second.first)&& (x_ < a.second.first + w_) && (y_ >= a.second.second) && (y_ < a.second.second + h_);
 }
 
 void Munchkin::ReDraw(){
-	SDL_GetWindowSize(graphics->mainWindow, &wW, &wH);
+	graphics->GetWindowSize(wW, wH);
+	cH=wH/5.5;
+	cW=cardRatio*static_cast<double>(cH);
 	ShowMap();
-
 	if((zoomed>=0)&&(zoomed<170)) ZoomCard(zoomed);
 	graphics->Flip();
 }
@@ -122,8 +123,6 @@ void Munchkin::Start()
 	plr[cp].hand.assign(a,a+sizeof(a)/sizeof(int));
 	plr[cp].equip.assign(a,a+sizeof(a)/sizeof(int));
 	plr[cp].desk.assign(a,a+4);
-
-
 	ReDraw();
 }
 
@@ -134,7 +133,7 @@ void Munchkin::Update()
 	if(input->IsMouseButtonDown(3)) {
 		x=input->GetButtonDownCoords().x;
 		y=input->GetButtonDownCoords().y;
-		std::map<std::vector<int>::iterator, std::pair<int,int>>::iterator it = find_if(windowMap.begin(),windowMap.end(),FindCard(x,y,cardRatio*static_cast<double>(wH/5.5),(wH/5.5)));
+		mWMap::iterator it = find_if(windowMap.begin(),windowMap.end(),FindCard(x,y,cW,cH));
 		if (it!=windowMap.end()) zoomed=*(it->first);
 	}
 //	if(input->IsMouseButtonDown(1)) ;
