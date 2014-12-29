@@ -51,7 +51,7 @@ private:
 	Image* back;
 	int cp, ep, totalplayers, zoomed;
 
-	int wW,wH, cW, cH, mapW, mapH;
+	int wW, wH, cW, cH, mapW, mapH;
 	double cardRatio;
 
 	Player plr[2];

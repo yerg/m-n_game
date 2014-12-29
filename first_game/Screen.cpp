@@ -94,7 +94,7 @@ void Munchkin::ShowMap(){
 }
 
 bool Munchkin::FindCard::operator()(const pWMap &a) const{
-	return (x_ >= a.second.first)&& (x_ < a.second.first + w_) && (y_ >= a.second.second) && (y_ < a.second.second + h_);
+	return (x_ >= a.second.first) && (x_ < a.second.first + w_) && (y_ >= a.second.second) && (y_ < a.second.second + h_);
 }
 
 void Munchkin::ReDraw(){
@@ -110,12 +110,18 @@ void Munchkin::Start()
 {
 	StartSettings();
 	LoadingImage();
-	srand(time(NULL));
-	doors.reserve(95);
-	for(int i=0; i<95;i++) doors.push_back(i);
-	treasures.reserve(75);
-	for(int i=95; i<170;i++) doors.push_back(i);
 
+	srand(time(NULL));
+
+	doors.reserve(95);
+	rd.reserve(95);
+	for(int i=0; i<95;i++) doors.push_back(i);
+	random_shuffle(doors.begin(),doors.end());
+
+	treasures.reserve(75);
+	rt.reserve(75);
+	for(int i=95; i<170;i++) doors.push_back(i);
+	random_shuffle(treasures.begin(),treasures.end());
 
 	cp=0; ep=1;
 	int a[]={132,12,1,66,64,153};
