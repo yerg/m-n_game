@@ -41,6 +41,10 @@ void Munchkin::LoadingImage()
 		card_map[i]=graphics->NewImage(filename);
 	}
 	back=graphics->NewImage("res\\back.jpg");
+	imDesk=graphics->NewImage("res\\desk.jpg");
+	imEquip=graphics->NewImage("res\\equip.jpg");
+	imHand=graphics->NewImage("res\\hand.jpg");
+	downup=graphics->NewImage("res\\downup.jpg");
 	toMove=graphics->NewImage("res\\select.jpg",255,255,255);
 	mapW=card_map[0]->GetWidth();
 	mapH=card_map[0]->GetHeight();

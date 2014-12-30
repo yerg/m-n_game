@@ -50,6 +50,11 @@ private:
 	(Image* card_map)[17];
 	Image* back;
 	Image* toMove;
+	Image* imHand;
+	Image* imEquip;
+	Image* imDesk;
+	Image* downup;
+
 	int cp, ep, totalplayers, zoomed;
 
 	int wW, wH, cW, cH, mapW, mapH;
@@ -63,6 +68,7 @@ private:
 
 	void FillMap();
 	void FillLine(std::vector<int> &, unsigned int, double, mWMap &);
+	void FillLine(std::vector<int> &, unsigned int, double, mWMap &, Image*);
 	void ShowMap();
 
 	void GiveCard(int nd, int nt, int pl);
