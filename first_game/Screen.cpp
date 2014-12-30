@@ -41,6 +41,7 @@ void Munchkin::LoadingImage()
 		card_map[i]=graphics->NewImage(filename);
 	}
 	back=graphics->NewImage("res\\back.jpg");
+	toMove=graphics->NewImage("res\\select.jpg",255,255,255);
 	mapW=card_map[0]->GetWidth();
 	mapH=card_map[0]->GetHeight();
 	cardRatio=static_cast<double>(mapW/5)/static_cast<double>(mapH/2);
@@ -77,9 +78,9 @@ void Munchkin::FillMap(){
 	FillLine(plr[cp].equip, plr[cp].ei, 1.2, windowMap);
 	FillLine(plr[cp].desk, plr[cp].di, 2.3, windowMap);
 
-	FillLine(plr[ep].desk, plr[cp].di, 7.8, windowMap);
-	FillLine(plr[ep].equip, plr[cp].ei, 8.9, windowMap);
-	FillLine(plr[ep].hand, plr[cp].hi, 10.0, backMap);
+	FillLine(plr[ep].desk, plr[ep].di, 7.8, windowMap);
+	FillLine(plr[ep].equip, plr[ep].ei, 8.9, windowMap);
+	FillLine(plr[ep].hand, plr[ep].hi, 10.0, backMap);
 
 }
 
@@ -91,6 +92,27 @@ void Munchkin::ShowMap(){
 	for(mWMap::iterator it=backMap.begin(); it != backMap.end(); ++it){
 		ShowBack(*it->first, it->second.first, it->second.second);
 	}
+	if (mayToMove) {
+		iMapToMove=windowMap.find(iToMove);
+		if (iMapToMove==windowMap.end()) iMapToMove=backMap.find(iToMove);
+		if (iMapToMove!=backMap.end())	graphics->DrawImage(toMove, iMapToMove->second.first, iMapToMove->second.second, 0, 0, mapW/5, mapH/2, cW, cH);
+	}
+}
+
+void Munchkin::GiveCard(int nd, int nt, int pl){
+	while (nd){
+		plr[pl].hand.push_back(doors.back());
+		doors.pop_back();
+		--nd;
+	}
+	while (nt){
+		plr[pl].hand.push_back(treasures.back());
+		treasures.pop_back();
+		--nt;
+	}
+}
+void Munchkin::GiveToAll(int nd, int nt){
+	for (int i=0; i<totalplayers; i++) GiveCard(nd,nt,i);
 }
 
 bool Munchkin::FindCard::operator()(const pWMap &a) const{
@@ -110,6 +132,10 @@ void Munchkin::Start()
 {
 	StartSettings();
 	LoadingImage();
+	totalplayers=2;
+	plr.resize(totalplayers);
+	cp=0; ep=1;
+	mayToMove=false;
 
 	srand(time(NULL));
 
@@ -120,30 +146,49 @@ void Munchkin::Start()
 
 	treasures.reserve(75);
 	rt.reserve(75);
-	for(int i=95; i<170;i++) doors.push_back(i);
+	for(int i=95; i<170;i++) treasures.push_back(i);
 	random_shuffle(treasures.begin(),treasures.end());
-
-	cp=0; ep=1;
+	GiveToAll(4,4);
+	
 	int a[]={132,12,1,66,64,153};
-	plr[cp].hi=4;
-	plr[cp].ei=3;
-	plr[cp].di=4;
-	plr[cp].hand.assign(a,a+sizeof(a)/sizeof(int));
-	plr[cp].equip.assign(a,a+sizeof(a)/sizeof(int));
-	plr[cp].desk.assign(a,a+4);
+	plr[ep].hi=4;
+	plr[ep].ei=3;
+	plr[ep].di=4;
+	plr[ep].hand.assign(a,a+sizeof(a)/sizeof(int));
+	plr[ep].equip.assign(a,a+sizeof(a)/sizeof(int));
+	plr[ep].desk.assign(a,a+4);
 	ReDraw();
 }
 
 void Munchkin::Update()
 {
-	int x, y;
-	if(input->IsExit()) game->Exit();
+	int x=0, y=0;
+	if(input->IsExit()) {
+		game->Exit();
+	}
 	if(input->IsMouseButtonDown(3)) {
 		x=input->GetButtonDownCoords().x;
 		y=input->GetButtonDownCoords().y;
 		mWMap::iterator it = find_if(windowMap.begin(),windowMap.end(),FindCard(x,y,cW,cH));
 		if (it!=windowMap.end()) zoomed = *(it->first);
 	}
-//	if(input->IsMouseButtonDown(1)) ;
+	if(input->IsMouseButtonDown(1)) {
+		x=input->GetButtonDownCoords().x;
+		y=input->GetButtonDownCoords().y;
+
+		while(!(input->IsMouseButtonUp(1))){input->Update();}
+
+		mWMap::iterator it = find_if(windowMap.begin(),windowMap.end(),FindCard(x,y,cW,cH));
+
+		if (it==windowMap.end()) it = find_if(backMap.begin(),backMap.end(),FindCard(x,y,cW,cH));
+		if (it!=backMap.end()) {
+			if (iToMove!=it->first){ 
+				mayToMove=true;
+				iToMove=it->first;
+			} else {
+				mayToMove=!mayToMove;
+			}
+		}
+	}
 	ReDraw();
 }

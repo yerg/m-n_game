@@ -49,12 +49,13 @@ private:
 	Graphics* graphics;
 	(Image* card_map)[17];
 	Image* back;
+	Image* toMove;
 	int cp, ep, totalplayers, zoomed;
 
 	int wW, wH, cW, cH, mapW, mapH;
 	double cardRatio;
 
-	Player plr[2];
+	std::vector<Player> plr;
 
 	void ShowCard(int id, int x, int y);
 	void ShowBack(int id, int x, int y);
@@ -64,6 +65,9 @@ private:
 	void FillLine(std::vector<int> &, unsigned int, double, mWMap &);
 	void ShowMap();
 
+	void GiveCard(int nd, int nt, int pl);
+	void GiveToAll(int nd, int nt);
+
 	void StartSettings();
 	void LoadingImage();
 
@@ -72,7 +76,9 @@ private:
 	std::vector<int> doors,treasures,rd,rt;
 	std::vector<int> monster;
 	std::vector<int> helper;
+	mWMap::iterator iMapToMove;
 	std::vector<int>::iterator iToMove;
+	bool mayToMove;
 	mWMap windowMap, backMap;
 	
 public:
