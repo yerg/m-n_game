@@ -10,6 +10,8 @@ class Image;
 #include "Graphics.h"
 class Graphics;
 
+
+
 class Screen
 {
 protected:
@@ -23,27 +25,33 @@ public:
 };
 
 
-
 class Player{
 public:
-	std::vector<int> hand, equip, desk;
-	unsigned int hi, ei, di;
+	std::vector<int> deck[3];
+	unsigned int i[3];
 	int level;
 	bool gender;
-	Player():hi(0),ei(0),di(0),level(1),gender(true){hand.reserve(10); equip.reserve(10); desk.reserve(10);};
+	Player():level(1),gender(true){i[0]=0; i[1]=0; i[2]=0; deck[0].reserve(10); deck[1].reserve(10); deck[2].reserve(10);};
 };
-
-typedef std::pair<std::vector<int>::iterator, std::pair<int,int>> pWMap;
-typedef std::map<std::vector<int>::iterator, std::pair<int,int>> mWMap;
 
 class Munchkin : public Screen
 {
+	struct Properties{
+		int x,y, vectorNumber, playerNumber;
+		Properties(int vN, int pN):vectorNumber(vN),playerNumber(pN){};
+		Properties(){};
+	};
+
+	typedef std::pair<std::vector<int>::iterator, Properties> pWMap;
+	typedef std::map<std::vector<int>::iterator, Properties> mWMap;
+
 	struct FindCard{
 		FindCard(int x, int y, int w, int h) : x_(x), y_(y), w_(w), h_(h){}
 		bool operator()(const pWMap &a) const;
 	private:
 		int x_, y_, w_, h_;
 	};
+
 private:
 	Input* input;
 	Graphics* graphics;
@@ -65,10 +73,10 @@ private:
 	void ShowCard(int id, int x, int y);
 	void ShowBack(int id, int x, int y);
 	void ZoomCard(int id);
+	void DragCard();
 
 	void FillMap();
-	void FillLine(std::vector<int> &, unsigned int, double, mWMap &);
-	void FillLine(std::vector<int> &, unsigned int, double, mWMap &, Image*);
+	void FillLine(Properties *properties, double col);
 	void ShowMap();
 
 	void GiveCard(int nd, int nt, int pl);
@@ -83,9 +91,8 @@ private:
 	std::vector<int> monster;
 	std::vector<int> helper;
 	mWMap::iterator iMapToMove;
-	std::vector<int>::iterator iToMove;
 	bool mayToMove;
-	mWMap windowMap, backMap;
+	mWMap windowMap;
 	
 public:
 	void Start();
