@@ -21,6 +21,9 @@ void Screen::Destroy()
 }
 
 
+bool Munchkin::FindCard::operator()(const pCardMap &a) const{
+	return (x_ >= a.second.x) && (x_ < a.second.x + w_) && (y_ >= a.second.y) && (y_ < a.second.y + h_);
+}
 
 void Munchkin::StartSettings()
 {
@@ -44,13 +47,12 @@ void Munchkin::LoadingImage()
 	imDesk=graphics->NewImage("res\\desk.jpg");
 	imEquip=graphics->NewImage("res\\equip.jpg");
 	imHand=graphics->NewImage("res\\hand.jpg");
-	downup=graphics->NewImage("res\\downup.jpg");
+	down=graphics->NewImage("res\\down.jpg");
+	up=graphics->NewImage("res\\up.jpg");
 	toMove=graphics->NewImage("res\\select.jpg",255,255,255);
 	mapW=card_map[0]->GetWidth();
 	mapH=card_map[0]->GetHeight();
 	cardRatio=static_cast<double>(mapW/5)/static_cast<double>(mapH/2);
-
-
 }
 
 void Munchkin::ShowCard(int id, int x, int y){
@@ -68,29 +70,30 @@ void Munchkin::ZoomCard(int id){
 void Munchkin::FillLine(Properties *properties, double col){
 	std::vector<int>::iterator it;
 	for(int i=0; (i<5)&&(i<plr[properties->playerNumber].deck[properties->vectorNumber].size()); i++){
-
 		it=plr[properties->playerNumber].deck[properties->vectorNumber].begin()+((plr[properties->playerNumber].i[properties->vectorNumber]+i)%plr[properties->playerNumber].deck[properties->vectorNumber].size());
 		properties->x=cW*col;
 		properties->y=(0.25+i)*cH;
-		windowMap[it] = *properties;
+		cardMap[it] = *properties;
 	}
 	delete properties;
 }
 void Munchkin::FillMap(){
-	windowMap.clear();
+	cardMap.clear();
 	
 	FillLine(new Properties(0,cp), 0.1);
 	FillLine(new Properties(1,cp), 1.2);
 	FillLine(new Properties(2,cp), 2.3);
-
 	FillLine(new Properties(2,ep), 7.8);
 	FillLine(new Properties(1,ep), 8.9);
 	FillLine(new Properties(0,ep), 10.0);
 
+	
+
 }
+
 void Munchkin::ShowMap(){
 	FillMap();
-	for(mWMap::iterator it=windowMap.begin(); it != windowMap.end(); ++it){
+	for(mCardMap::iterator it=cardMap.begin(); it != cardMap.end(); ++it){
 		if ( (it->second.playerNumber==ep) && (!(it->second.vectorNumber)) ) {
 			ShowBack(*it->first, it->second.x, it->second.y);
 		} else {
@@ -98,8 +101,7 @@ void Munchkin::ShowMap(){
 		}
 	}
 	if (mayToMove) {
-//		if (iMapToMove==backMap.end()) iMapToMove=windowMap.find(iToMove);
-		if (iMapToMove!=windowMap.end())	graphics->DrawImage(toMove, iMapToMove->second.x, iMapToMove->second.y, 0, 0, mapW/5, mapH/2, cW, cH);
+		if (iMapToMove!=cardMap.end())	graphics->DrawImage(toMove, iMapToMove->second.x, iMapToMove->second.y, 0, 0, mapW/5, mapH/2, cW, cH);
 	}
 }
 
@@ -117,10 +119,6 @@ void Munchkin::GiveCard(int nd, int nt, int pl){
 }
 void Munchkin::GiveToAll(int nd, int nt){
 	for (int i=0; i<totalplayers; i++) GiveCard(nd,nt,i);
-}
-
-bool Munchkin::FindCard::operator()(const pWMap &a) const{
-	return (x_ >= a.second.x) && (x_ < a.second.x + w_) && (y_ >= a.second.y) && (y_ < a.second.y + h_);
 }
 
 void Munchkin::ReDraw(){
@@ -175,10 +173,11 @@ void Munchkin::Update()
 
 	//Zoom
 	if(input->IsMouseButtonDown(3)) { 
+
 		x=input->GetButtonDownCoords().x;
 		y=input->GetButtonDownCoords().y;
-		mWMap::iterator it = find_if(windowMap.begin(),windowMap.end(),FindCard(x,y,cW,cH));
-		if ( (it!=windowMap.end()) && ((it->second.playerNumber==cp) || (it->second.vectorNumber!=0)) ) zoomed = *(it->first);
+		mCardMap::iterator it = find_if(cardMap.begin(),cardMap.end(),FindCard(x,y,cW,cH));
+		if ( (it!=cardMap.end()) && ((it->second.playerNumber==cp) || (it->second.vectorNumber!=0)) ) zoomed = *(it->first);
 	} 
 
 	//Left-click
@@ -188,10 +187,10 @@ void Munchkin::Update()
 
 		while(!(input->IsMouseButtonUp(1))){input->Update();} //Freeze until button up prevents recur of next chunk
 
-		mWMap::iterator it = find_if(windowMap.begin(),windowMap.end(),FindCard(x,y,cW,cH));
+		mCardMap::iterator it = find_if(cardMap.begin(),cardMap.end(),FindCard(x,y,cW,cH));
 //		if (it==windowMap.end()) it = find_if(backMap.begin(),backMap.end(),FindCard(x,y,cW,cH));
 
-		if (it!=windowMap.end()) {
+		if (it!=cardMap.end()) {
 			if (iMapToMove==it){ 
 				mayToMove=!mayToMove;
 			} 
@@ -214,4 +213,19 @@ void Munchkin::Update()
 		}
 	}
 	ReDraw();
+}
+
+
+
+void CardObj::SetSize(){
+	objHeight = view->wH / 5.5;
+	objWidth = view->cardRatio * objHeight;
+}
+
+void CardObj::OnClickR(){
+	view->ZoomCard(id);
+}
+
+void CardObj::OnClickL(){
+
 }

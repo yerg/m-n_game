@@ -25,6 +25,7 @@ public:
 };
 
 
+
 class Player{
 public:
 	std::vector<int> deck[3];
@@ -38,16 +39,16 @@ class Munchkin : public Screen
 {
 	struct Properties{
 		int x,y, vectorNumber, playerNumber;
-		Properties(int vN, int pN):vectorNumber(vN),playerNumber(pN){};
-		Properties(){};
+		Properties(int vN, int pN):vectorNumber(vN),playerNumber(pN){}
+		Properties(){}
 	};
 
-	typedef std::pair<std::vector<int>::iterator, Properties> pWMap;
-	typedef std::map<std::vector<int>::iterator, Properties> mWMap;
+	typedef std::pair<std::vector<int>::iterator, Properties> pCardMap;
+	typedef std::map<std::vector<int>::iterator, Properties> mCardMap;
 
 	struct FindCard{
 		FindCard(int x, int y, int w, int h) : x_(x), y_(y), w_(w), h_(h){}
-		bool operator()(const pWMap &a) const;
+		bool operator()(const pCardMap &a) const;
 	private:
 		int x_, y_, w_, h_;
 	};
@@ -61,8 +62,8 @@ private:
 	Image* imHand;
 	Image* imEquip;
 	Image* imDesk;
-	Image* downup;
-
+	Image* down;
+	Image* up;
 	int cp, ep, totalplayers, zoomed;
 
 	int wW, wH, cW, cH, mapW, mapH;
@@ -90,12 +91,49 @@ private:
 	std::vector<int> doors,treasures,rd,rt;
 	std::vector<int> monster;
 	std::vector<int> helper;
-	mWMap::iterator iMapToMove;
+	mCardMap::iterator iMapToMove;
 	bool mayToMove;
-	mWMap windowMap;
-	
+	mCardMap cardMap;
+	friend class MapObj;
+	friend class CardObj;
 public:
 	void Start();
 	void Update();
 };
+
+
+class MapObj{
+protected:
+	int objWidth;
+	int objHeight;
+	Munchkin * view;
+	virtual void SetSize()=0;
+public:
+	MapObj(Munchkin *v) {view=v;}
+	int GetW() {return objWidth;}
+	int GetH() {return objWidth;}
+	virtual void OnClickL()=0;
+	virtual void Draw()=0;
+
+};
+
+class CardObj : public MapObj {
+	int id; 
+	void SetSize();
+public:
+	CardObj(Munchkin *v) : MapObj(v) {SetSize();}
+	void OnClickL();
+	void OnClickR();
+	void Draw();
+};
+
+class ButtonObj : public MapObj {
+protected:
+	Image *image;
+	ButtonObj(Munchkin *v) : MapObj(v){SetSize();}
+
+public:
+	void Draw();
+};
+
 #endif
