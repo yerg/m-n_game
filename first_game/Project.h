@@ -10,9 +10,13 @@
 #include <algorithm>
 #include <map>
 #include <utility>
+#include "SDL_image.h"
 
-#include "Game.h"
-#include "Graphics.h"
 #include "Image.h"
+#include "Input.h"
+#include "Graphics.h"
+#include "Screen.h"
+#include "Game.h"
+#include "Munchkin.h"
 
 #endif

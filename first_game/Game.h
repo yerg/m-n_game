@@ -3,12 +3,10 @@
 
 #include "Project.h"
 
-#include "Graphics.h"
 class Graphics;
-#include "Input.h"
 class Input;
-#include "Screen.h"
 class Screen;
+
 class Game
 {
 private:
