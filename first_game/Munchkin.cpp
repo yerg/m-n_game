@@ -197,7 +197,7 @@ void Munchkin::Update()
 
 
 
-void CardObj::SetSize(){
+void MapObj::SetSize(){
 	objHeight = view->wH / 5.5;
 	objWidth = view->cardRatio * objHeight;
 }
@@ -208,4 +208,10 @@ void CardObj::OnClickR(){
 
 void CardObj::OnClickL(){
 
+}
+
+void ButtonObj::SetSize(){
+	MapObj::SetSize();
+	objHeight *= propH;
+	objWidth *= propW;
 }

@@ -3,7 +3,6 @@
 
 #include "Project.h"
 
-
 class Player{
 public:
 	std::vector<int> deck[3];
@@ -85,19 +84,19 @@ protected:
 	int objWidth;
 	int objHeight;
 	Munchkin * view;
-	virtual void SetSize()=0;
+	virtual void SetSize();
 public:
 	MapObj(Munchkin *v) {view=v;}
 	int GetW() {return objWidth;}
 	int GetH() {return objWidth;}
 	virtual void OnClickL()=0;
+	virtual void OnClickR()=0;
 	virtual void Draw()=0;
-
+	virtual void ResetSize(){SetSize();}
 };
 
 class CardObj : public MapObj {
 	int id; 
-	void SetSize();
 public:
 	CardObj(Munchkin *v) : MapObj(v) {SetSize();}
 	void OnClickL();
@@ -109,9 +108,14 @@ class ButtonObj : public MapObj {
 protected:
 	Image *image;
 	ButtonObj(Munchkin *v) : MapObj(v){SetSize();}
+	double propH, propW;
+	void SetSize();
 
 public:
 	void Draw();
+	void OnClickR(){;}
 };
+
+
 
 #endif
