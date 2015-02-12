@@ -2,7 +2,7 @@
 #define MUNCHKIN_H
 
 #include "Project.h"
-#include "Obj.h"
+#include "MapItem.h"
 #include "Card.h"
 
 
@@ -48,6 +48,8 @@ private:
 	int cp, ep, totalplayers, zoomed;
 	int wW, wH, cW, cH, mapW, mapH;
 	double cardRatio;
+	std::unordered_set< std::unique_ptr<MapItem> > mapOfItem;
+
 	std::vector<Player> plr;
 
 	std::vector<int> doors,treasures,rd,rt;
@@ -77,50 +79,11 @@ private:
 	void ReDraw();
 
 	
-	friend class MapObj;
-	friend class CardObj;
+	friend class MapItem;
+	friend class CardItem;
 public:
 	void Start();
 	void Update();
-};
-
-
-class MapObj{
-protected:
-	int objWidth;
-	int objHeight;
-	Munchkin * view;
-	virtual void SetSize();
-public:
-	MapObj(Munchkin *v) {view=v;}
-	int GetW() {return objWidth;}
-	int GetH() {return objWidth;}
-	virtual void ResetSize(){SetSize();}
-	virtual void OnClickL()=0;
-	virtual void OnClickR()=0;
-	virtual void Draw()=0;
-	
-};
-
-class CardObj : public MapObj {
-	int id; 
-public:
-	CardObj(Munchkin *v, int id) : MapObj(v), id(id) {SetSize();}
-	void OnClickL();
-	void OnClickR();
-	void Draw();
-};
-
-class ButtonObj : public MapObj {
-protected:
-	Image *image;
-	ButtonObj(Munchkin *v) : MapObj(v){SetSize();}
-	double propH, propW;
-	void SetSize();
-
-public:
-	void OnClickR(){;}
-	void Draw();
 };
 
 

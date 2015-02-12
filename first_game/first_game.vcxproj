@@ -84,7 +84,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Munchkin.cpp" />
-    <ClCompile Include="Obj.cpp" />
+    <ClCompile Include="MapItem.cpp" />
     <ClCompile Include="Screen.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -94,7 +94,7 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Munchkin.h" />
-    <ClInclude Include="Obj.h" />
+    <ClInclude Include="MapItem.h" />
     <ClInclude Include="Project.h" />
     <ClInclude Include="Screen.h" />
   </ItemGroup>

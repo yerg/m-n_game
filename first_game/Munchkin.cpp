@@ -195,23 +195,3 @@ void Munchkin::Update()
 	ReDraw();
 }
 
-
-
-void MapObj::SetSize(){
-	objHeight = view->wH / 5.5;
-	objWidth = view->cardRatio * objHeight;
-}
-
-void CardObj::OnClickR(){
-	view->ZoomCard(id);
-}
-
-void CardObj::OnClickL(){
-	view->
-}
-
-void ButtonObj::SetSize(){
-	MapObj::SetSize();
-	objHeight *= propH;
-	objWidth *= propW;
-}

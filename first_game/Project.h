@@ -9,6 +9,7 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <unordered_set>
 #include <utility>
 #include "SDL_image.h"
 
