@@ -2,6 +2,9 @@
 #define MUNCHKIN_H
 
 #include "Project.h"
+#include "Obj.h"
+#include "Card.h"
+
 
 class Player{
 public:
@@ -41,12 +44,20 @@ private:
 	Image* imDesk;
 	Image* down;
 	Image* up;
-	int cp, ep, totalplayers, zoomed;
 
+	int cp, ep, totalplayers, zoomed;
 	int wW, wH, cW, cH, mapW, mapH;
 	double cardRatio;
-
 	std::vector<Player> plr;
+
+	std::vector<int> doors,treasures,rd,rt;
+	std::vector<int> monster;
+	std::vector<int> helper;
+
+	mCardMap::iterator iMapToMove;
+	bool mayToMove;
+	mCardMap cardMap;
+
 
 	void ShowCard(int id, int x, int y);
 	void ShowBack(int id, int x, int y);
@@ -65,12 +76,7 @@ private:
 
 	void ReDraw();
 
-	std::vector<int> doors,treasures,rd,rt;
-	std::vector<int> monster;
-	std::vector<int> helper;
-	mCardMap::iterator iMapToMove;
-	bool mayToMove;
-	mCardMap cardMap;
+	
 	friend class MapObj;
 	friend class CardObj;
 public:
@@ -89,16 +95,17 @@ public:
 	MapObj(Munchkin *v) {view=v;}
 	int GetW() {return objWidth;}
 	int GetH() {return objWidth;}
+	virtual void ResetSize(){SetSize();}
 	virtual void OnClickL()=0;
 	virtual void OnClickR()=0;
 	virtual void Draw()=0;
-	virtual void ResetSize(){SetSize();}
+	
 };
 
 class CardObj : public MapObj {
 	int id; 
 public:
-	CardObj(Munchkin *v) : MapObj(v) {SetSize();}
+	CardObj(Munchkin *v, int id) : MapObj(v), id(id) {SetSize();}
 	void OnClickL();
 	void OnClickR();
 	void Draw();
@@ -112,8 +119,8 @@ protected:
 	void SetSize();
 
 public:
-	void Draw();
 	void OnClickR(){;}
+	void Draw();
 };
 
 

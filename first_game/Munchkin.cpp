@@ -207,7 +207,7 @@ void CardObj::OnClickR(){
 }
 
 void CardObj::OnClickL(){
-
+	view->
 }
 
 void ButtonObj::SetSize(){
