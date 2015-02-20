@@ -12,7 +12,7 @@ void Munchkin::StartSettings()
 
 }
 
-void Munchkin::LoadingImage()
+void Munchkin::LoadImages()
 {
 	for (int i=0; i<17; i++)
 	{
@@ -47,25 +47,25 @@ void Munchkin::ZoomCard(int id){
 
 
 
-void Munchkin::FillLine(Properties *properties, double col){
+void Munchkin::FillLine(Properties *pr, double col){
 	std::vector<int>::iterator it;
-	for(int i=0; (i<5)&&(i<plr[properties->playerNumber].deck[properties->vectorNumber].size()); i++){
-		it=plr[properties->playerNumber].deck[properties->vectorNumber].begin()+((plr[properties->playerNumber].i[properties->vectorNumber]+i)%plr[properties->playerNumber].deck[properties->vectorNumber].size());
-		properties->x=cW*col;
-		properties->y=(0.25+i)*cH;
-		cardMap[it] = *properties;
+	for(int i=0; (i<5)&&(i<plr[pr->playerNumber].deck[pr->vectorName].size()); i++){
+		it=plr[pr->playerNumber].deck[pr->vectorName].begin()+((plr[pr->playerNumber].i[pr->vectorName]+i)%plr[pr->playerNumber].deck[pr->vectorName].size());
+		pr->x=cW*col;
+		pr->y=(0.25+i)*cH;
+		cardMap[it] = *pr;
 	}
-	delete properties;
+	delete pr;
 }
 void Munchkin::FillMap(){
 	cardMap.clear();
 
-	FillLine(new Properties(0,cp), 0.1);
-	FillLine(new Properties(1,cp), 1.2);
-	FillLine(new Properties(2,cp), 2.3);
-	FillLine(new Properties(2,ep), 7.8);
-	FillLine(new Properties(1,ep), 8.9);
-	FillLine(new Properties(0,ep), 10.0);
+	FillLine(new Properties(HAND,cp), 0.1);
+	FillLine(new Properties(EQUIP,cp), 1.2);
+	FillLine(new Properties(DESK,cp), 2.3);
+	FillLine(new Properties(DESK,ep), 7.8);
+	FillLine(new Properties(EQUIP,ep), 8.9);
+	FillLine(new Properties(HAND,ep), 10.0);
 
 
 
@@ -74,7 +74,7 @@ void Munchkin::FillMap(){
 void Munchkin::ShowMap(){
 	FillMap();
 	for(mCardMap::iterator it=cardMap.begin(); it != cardMap.end(); ++it){
-		if ( (it->second.playerNumber==ep) && (!(it->second.vectorNumber)) ) {
+		if ( (it->second.playerNumber==ep) && (!(it->second.vectorName)) ) {
 			ShowBack(*it->first, it->second.x, it->second.y);
 		} else {
 			ShowCard(*it->first, it->second.x, it->second.y);
@@ -113,7 +113,7 @@ void Munchkin::ReDraw(){
 void Munchkin::Start()
 {
 	StartSettings();
-	LoadingImage();
+	LoadImages();
 	totalplayers=2;
 	plr.resize(totalplayers);
 	cp=0; ep=1;
@@ -157,7 +157,7 @@ void Munchkin::Update()
 		x=input->GetButtonDownCoords().x;
 		y=input->GetButtonDownCoords().y;
 		mCardMap::iterator it = find_if(cardMap.begin(),cardMap.end(),FindCard(x,y,cW,cH));
-		if ( (it!=cardMap.end()) && ((it->second.playerNumber==cp) || (it->second.vectorNumber!=0)) ) zoomed = *(it->first);
+		if ( (it!=cardMap.end()) && ((it->second.playerNumber==cp) || (it->second.vectorName!=0)) ) zoomed = *(it->first);
 	} 
 
 	//Left-click
@@ -177,9 +177,9 @@ void Munchkin::Update()
 			else {
 				if (mayToMove) {
 					mayToMove=false;
-					if ((iMapToMove->second.playerNumber!=it->second.playerNumber)||(iMapToMove->second.vectorNumber!=it->second.vectorNumber)){
-						plr[it->second.playerNumber].deck[it->second.vectorNumber].insert(it->first, *iMapToMove->first);
-						plr[iMapToMove->second.playerNumber].deck[iMapToMove->second.vectorNumber].erase(iMapToMove->first);
+					if ((iMapToMove->second.playerNumber!=it->second.playerNumber)||(iMapToMove->second.vectorName!=it->second.vectorName)){
+						plr[it->second.playerNumber].deck[it->second.vectorName].insert(it->first, *iMapToMove->first);
+						plr[iMapToMove->second.playerNumber].deck[iMapToMove->second.vectorName].erase(iMapToMove->first);
 					}else{
 						std::swap(*it->first,*iMapToMove->first);
 					}

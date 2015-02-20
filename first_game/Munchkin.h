@@ -4,7 +4,8 @@
 #include "Project.h"
 #include "MapItem.h"
 #include "Card.h"
-
+class MapItem;
+enum CardGroup {HAND,EQUIP,DESK};
 
 class Player{
 public:
@@ -12,14 +13,15 @@ public:
 	unsigned int i[3];
 	int level;
 	bool gender;
-	Player():level(1),gender(true){i[0]=0; i[1]=0; i[2]=0; deck[0].reserve(10); deck[1].reserve(10); deck[2].reserve(10);};
+	Player():level(1),gender(true){i[HAND]=0; i[EQUIP]=0; i[DESK]=0; deck[HAND].reserve(10); deck[EQUIP].reserve(10); deck[DESK].reserve(10);};
 };
 
 class Munchkin : public Screen
 {
 	struct Properties{
-		int x,y, vectorNumber, playerNumber;
-		Properties(int vN, int pN):vectorNumber(vN),playerNumber(pN){}
+		int x,y,  playerNumber;
+		CardGroup vectorName;
+		Properties(CardGroup vN, int pN):vectorName(vN),playerNumber(pN){}
 		Properties(){}
 	};
 
@@ -48,7 +50,7 @@ private:
 	int cp, ep, totalplayers, zoomed;
 	int wW, wH, cW, cH, mapW, mapH;
 	double cardRatio;
-	std::unordered_set< std::unique_ptr<MapItem> > mapOfItem;
+	std::unordered_set< std::unique_ptr<MapItem> > mapOfItems;
 
 	std::vector<Player> plr;
 
@@ -74,12 +76,16 @@ private:
 	void GiveToAll(int nd, int nt);
 
 	void StartSettings();
-	void LoadingImage();
+	void LoadImages();
 
 	void ReDraw();
 
-	
 	friend class MapItem;
+	friend class ButtonItem; 
+	friend class BindedToVector;
+	friend class UpButton;
+	friend class DownButton;
+	friend class GroupButton;
 	friend class CardItem;
 public:
 	void Start();

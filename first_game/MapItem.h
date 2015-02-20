@@ -3,51 +3,78 @@
 
 #include "Munchkin.h"
 class Munchkin;
-class MapItem{
+enum CardGroup;
+
+class MapItem {											//Base interface
 protected:
 	int itemWidth, itemHeight, x, y;
 	Munchkin * view;
-	virtual void SetSize()=0;
+
+	virtual void Settings();
+
 public:
-	MapItem(Munchkin *v) {view=v;}
-
+	MapItem(Munchkin *v);
 	int GetW() {return itemWidth;}
-	int GetH() {return itemWidth;}
-
-	virtual void ResetSize(){SetSize();}
+	int GetH() {return itemHeight;}
+	void Reset() {Settings();}
 
 	virtual void OnClickL()=0;
 	virtual void OnClickR()=0;
-	virtual void Draw()=0; 
-
+	virtual void Draw()=0;
 };
 
-class CardItem : public MapItem {
-	int id, vectorNumber, playerNumber;
-	void SetSize() {MapItem::SetSize();}
-public:
-	CardItem(Munchkin *v, int id) : MapItem(v), id(id) {SetSize();}
-	void OnClickL();
-	void OnClickR();
-	void Draw();
-};
-
-class ButtonItem : public MapItem {
+class ButtonItem : public MapItem {						//Abstract button
 protected:
 	Image *image;
-	ButtonItem(Munchkin *v) : MapItem(v){SetSize();}
 	double propH, propW;
-	void SetSize();
+
+	virtual void Settings();
+public:
+	ButtonItem(Munchkin *v) : MapItem(v){;}
+	virtual void OnClickR() {;}
+
+	virtual void Draw();
+};
+
+class BindedToVector : public ButtonItem {				//Abstract
+protected:
+	int playerNumber;
+	CardGroup vectorName;
+
+	virtual void Settings();
 
 public:
-	void OnClickR(){;}
-	void Draw();
+	void SetPlayer(int p){playerNumber=p;}
+	BindedToVector(Munchkin *v, CardGroup vn, int p) : ButtonItem(v), vectorName(vn), playerNumber(p){;}
 };
 
-class HandItem :public ButtonItem {
+class GroupButton : public BindedToVector{				//Hand, equip, desk
+public:
+	GroupButton(Munchkin *v, CardGroup vn, int p);
+	virtual void OnClickL();
+};
 
+class UpButton :public BindedToVector{
+public:
+	UpButton(Munchkin *v, CardGroup vn, int p);
+	virtual void OnClickL();
+};
+
+class DownButton :public BindedToVector{
+public:
+	DownButton(Munchkin *v, CardGroup vn, int p);
+	virtual void OnClickL();
 };
 
 
+class CardItem : public MapItem {						//Card 
+	int id, vectorNumber, playerNumber;
+
+public:
+	CardItem(Munchkin *v, int id) : MapItem(v), id(id) {;}
+	virtual void OnClickL();
+	virtual void OnClickR();
+	virtual void Draw();
+};
 
 #endif
