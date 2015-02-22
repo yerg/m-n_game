@@ -36,10 +36,10 @@
     <ClCompile Include="Munchkin.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="Card.cpp">
+    <ClCompile Include="MapItem.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="MapItem.cpp">
+    <ClCompile Include="Model.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,14 +65,14 @@
     <ClInclude Include="Munchkin.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="Card.h">
+    <ClInclude Include="MapItem.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="MapItem.h">
+    <ClInclude Include="Model.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram11.cd" />
   </ItemGroup>
 </Project>

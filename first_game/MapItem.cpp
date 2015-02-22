@@ -1,7 +1,7 @@
 #include "MapItem.h"
 
 
-MapItem::MapItem(Munchkin *v){
+MapItem::MapItem(Munchkin *v, int x, int y) : x(x), y(y){
 	view=v;
 	Settings();
 }
@@ -18,7 +18,7 @@ void ButtonItem::Settings(){
 }
 
 void ButtonItem::Draw(){
-	/////////////////////////
+	(*view).graphics->DrawImage(image,x,y,0,0,image->GetWidth(),image->GetHeight(),itemWidth,itemHeight);
 }
 
 void BindedToVector::Settings(){
@@ -28,7 +28,7 @@ void BindedToVector::Settings(){
 	}
 }
 
-GroupButton::GroupButton(Munchkin *v, CardGroup vn, int p) : BindedToVector(v,vn,p){
+GroupButton::GroupButton(Munchkin *v, int x, int y, CardGroup vn, int p) : BindedToVector(v, x, y, vn, p){
 	propH=0.25; 
 	propW=1;
 
@@ -44,22 +44,25 @@ GroupButton::GroupButton(Munchkin *v, CardGroup vn, int p) : BindedToVector(v,vn
 		break;
 
 	}
+	Settings();
 }
 
-UpButton::UpButton(Munchkin *v, CardGroup vn, int p) : BindedToVector(v,vn,p){
+UpButton::UpButton(Munchkin *v, int x, int y, CardGroup vn, int p) : BindedToVector(v, x, y, vn, p){
 	propH=0.25;
 	propW=0.5;
 	image=view->up;
+	Settings();
 }
 
 void UpButton::OnClickL(){
 	--view->plr[playerNumber].i[vectorName];
 }
 
-DownButton::DownButton(Munchkin *v, CardGroup vn, int p) : BindedToVector(v,vn,p){
+DownButton::DownButton(Munchkin *v, int x, int y, CardGroup vn, int p) : BindedToVector(v, x, y, vn, p){
 	propH=0.25;
 	propW=0.5;
 	image=view->down;
+	Settings();
 }
 
 void DownButton::OnClickL(){
@@ -70,8 +73,12 @@ void GroupButton::OnClickL(){
 	////////////////////
 }
 
+void CardItem::Draw(){
+	view->ShowCard(id,x,y);
+}
+
 void CardItem::OnClickR(){
-	view->ZoomCard(id);
+	view->zoomed=id;
 }
 
 void CardItem::OnClickL(){

@@ -77,7 +77,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Card.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Image.cpp" />
@@ -88,7 +88,7 @@
     <ClCompile Include="Screen.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Card.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Image.h" />
@@ -99,7 +99,7 @@
     <ClInclude Include="Screen.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram11.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

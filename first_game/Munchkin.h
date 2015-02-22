@@ -3,9 +3,10 @@
 
 #include "Project.h"
 #include "MapItem.h"
-#include "Card.h"
+#include "Model.h"
 class MapItem;
-enum CardGroup {HAND,EQUIP,DESK};
+class Model;
+enum CardGroup;
 
 class Player{
 public:
@@ -27,12 +28,12 @@ class Munchkin : public Screen
 
 	typedef std::pair<std::vector<int>::iterator, Properties> pCardMap;
 	typedef std::map<std::vector<int>::iterator, Properties> mCardMap;
-
+	typedef std::vector< std::unique_ptr<MapItem> > vMap;
 	struct FindCard{
-		FindCard(int x, int y, int w, int h) : x_(x), y_(y), w_(w), h_(h){}
-		bool operator()(const pCardMap &a) const;
+		FindCard(int x, int y) : x_(x), y_(y){}
+		bool operator()(const std::unique_ptr<MapItem> &a) const;
 	private:
-		int x_, y_, w_, h_;
+		int x_, y_;
 	};
 
 private:
@@ -50,8 +51,9 @@ private:
 	int cp, ep, totalplayers, zoomed;
 	int wW, wH, cW, cH, mapW, mapH;
 	double cardRatio;
-	std::unordered_set< std::unique_ptr<MapItem> > mapOfItems;
-
+	
+	vMap mapOfItems;
+	
 	std::vector<Player> plr;
 
 	std::vector<int> doors,treasures,rd,rt;
@@ -76,8 +78,6 @@ private:
 	void GiveToAll(int nd, int nt);
 
 	void StartSettings();
-	void LoadImages();
-
 	void ReDraw();
 
 	friend class MapItem;

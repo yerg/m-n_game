@@ -1,19 +1,14 @@
 #include "Munchkin.h"
 
 
-bool Munchkin::FindCard::operator()(const pCardMap &a) const{
-	return (x_ >= a.second.x) && (x_ < a.second.x + w_) && (y_ >= a.second.y) && (y_ < a.second.y + h_);
+bool Munchkin::FindCard::operator()(const std::unique_ptr<MapItem> &a) const{
+	return (x_ >= a->GetX()) && (x_ < a->GetX() + a->GetW()) && (y_ >= a->GetY()) && (y_ < a->GetY() + a->GetH());
 }
 
 void Munchkin::StartSettings()
 {
 	input = game->GetInput();
 	graphics = game->GetGraphics();
-
-}
-
-void Munchkin::LoadImages()
-{
 	for (int i=0; i<17; i++)
 	{
 		char filename[20]; char letter[2]={'a'+i,'\0'};
@@ -35,37 +30,39 @@ void Munchkin::LoadImages()
 	cardRatio=static_cast<double>(mapW/5)/static_cast<double>(mapH/2);
 }
 
+
 void Munchkin::ShowCard(int id, int x, int y){
-	graphics->DrawImage(card_map[id/10], x, y, (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0, mapW/5, mapH/2, cW, cH);
+	graphics->DrawImage(card_map[id/10],  x,               y,  (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0,          mapW/5,  mapH/2, cW,           cH);
 }
 void Munchkin::ShowBack(int id, int x, int y){
-	graphics->DrawImage(back, x, y, 0, id<95 ? 0 : mapH/2, mapW/5, mapH/2, cW, cH);
+	graphics->DrawImage(back,             x,               y,  0,             id<95     ? 0      :    mapH/2,  mapW/5,  mapH/2, cW,           cH);
 }
 void Munchkin::ZoomCard(int id){
-	graphics->DrawImage(card_map[id/10], wW-cardRatio*wH, 0, (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0, mapW/5, mapH/2, cardRatio*wH, wH);
+	graphics->DrawImage(card_map[id/10],  wW-cardRatio*wH, 0,  (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0,          mapW/5,  mapH/2, cardRatio*wH, wH);
 }
 
 
 
-void Munchkin::FillLine(Properties *pr, double col){
+void Munchkin::FillLine(Properties *pr, double col){ 
 	std::vector<int>::iterator it;
 	for(int i=0; (i<5)&&(i<plr[pr->playerNumber].deck[pr->vectorName].size()); i++){
 		it=plr[pr->playerNumber].deck[pr->vectorName].begin()+((plr[pr->playerNumber].i[pr->vectorName]+i)%plr[pr->playerNumber].deck[pr->vectorName].size());
-		pr->x=cW*col;
-		pr->y=(0.25+i)*cH;
-		cardMap[it] = *pr;
+		mapOfItems.push_back(std::unique_ptr<MapItem> (new CardItem (this, cW*col,       (0.25+i)*cH, *it)));
 	}
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new GroupButton  (this, cW*col,       0,           pr->vectorName,pr->playerNumber)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new UpButton     (this, cW*col,       5.25*cH,     pr->vectorName,pr->playerNumber)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new DownButton   (this, cW*(col+0.5), 5.25*cH,     pr->vectorName,pr->playerNumber)));
 	delete pr;
 }
 void Munchkin::FillMap(){
 	cardMap.clear();
-
-	FillLine(new Properties(HAND,cp), 0.1);
+	mapOfItems.clear();
+	FillLine(new Properties(HAND, cp), 0.1);
 	FillLine(new Properties(EQUIP,cp), 1.2);
-	FillLine(new Properties(DESK,cp), 2.3);
-	FillLine(new Properties(DESK,ep), 7.8);
+	FillLine(new Properties(DESK, cp), 2.3);
+	FillLine(new Properties(DESK, ep), 7.8);
 	FillLine(new Properties(EQUIP,ep), 8.9);
-	FillLine(new Properties(HAND,ep), 10.0);
+	FillLine(new Properties(HAND, ep), 10.0);
 
 
 
@@ -83,6 +80,7 @@ void Munchkin::ShowMap(){
 	if (mayToMove) {
 		if (iMapToMove!=cardMap.end())	graphics->DrawImage(toMove, iMapToMove->second.x, iMapToMove->second.y, 0, 0, mapW/5, mapH/2, cW, cH);
 	}
+	for (std::vector<std::unique_ptr<MapItem> >::iterator it=mapOfItems.begin(); it!=mapOfItems.end(); ++it) (*it)->Draw();
 }
 
 void Munchkin::GiveCard(int nd, int nt, int pl){
@@ -113,7 +111,6 @@ void Munchkin::ReDraw(){
 void Munchkin::Start()
 {
 	StartSettings();
-	LoadImages();
 	totalplayers=2;
 	plr.resize(totalplayers);
 	cp=0; ep=1;
@@ -156,8 +153,10 @@ void Munchkin::Update()
 
 		x=input->GetButtonDownCoords().x;
 		y=input->GetButtonDownCoords().y;
-		mCardMap::iterator it = find_if(cardMap.begin(),cardMap.end(),FindCard(x,y,cW,cH));
-		if ( (it!=cardMap.end()) && ((it->second.playerNumber==cp) || (it->second.vectorName!=0)) ) zoomed = *(it->first);
+
+		vMap::iterator it = find_if(mapOfItems.begin(), mapOfItems.end(),FindCard(x,y));
+		if (it!=mapOfItems.end()) (*it)->OnClickR();
+
 	} 
 
 	//Left-click
@@ -167,7 +166,7 @@ void Munchkin::Update()
 
 		while(!(input->IsMouseButtonUp(1))){input->Update();} //Freeze until button up prevents recur of next chunk
 
-		mCardMap::iterator it = find_if(cardMap.begin(),cardMap.end(),FindCard(x,y,cW,cH));
+/*		mCardMap::iterator it = find_if(cardMap.begin(),cardMap.end(),FindCard(x,y,cW,cH));
 		//		if (it==windowMap.end()) it = find_if(backMap.begin(),backMap.end(),FindCard(x,y,cW,cH));
 
 		if (it!=cardMap.end()) {
@@ -190,7 +189,7 @@ void Munchkin::Update()
 					iMapToMove=it;
 				}
 			}
-		}
+		}*/
 	}
 	ReDraw();
 }
