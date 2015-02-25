@@ -18,6 +18,8 @@
 #include "Graphics.h"
 #include "Screen.h"
 #include "Game.h"
+
+#include "MapItem.h"
 #include "Munchkin.h"
 
 #endif

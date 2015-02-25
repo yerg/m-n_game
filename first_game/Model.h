@@ -1,9 +1,11 @@
-#ifndef CARD_H
-#define CARD_H
-#include<vector>
-enum CardGroup {HAND,EQUIP,DESK};
+#ifndef MODEL_H
+#define MODEL_H
+#include "CardGroup.h"
+#include "Munchkin.h"
 class Model {
+
 	struct Player{
+	
 	public:
 		std::vector<int> deck[3];
 		int level;
@@ -21,8 +23,11 @@ class Model {
 
 	void GiveCard(int nd, int nt, int pl);
 	void GiveToAll(int nd, int nt);
-
+	void StartGame();
+public:
+	Model(){StartGame();}
 	
+	void TryMove(CardPosition from, CardPosition to);
 };
 
 #endif

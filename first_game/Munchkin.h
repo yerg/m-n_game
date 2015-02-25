@@ -1,12 +1,12 @@
 #ifndef MUNCHKIN_H
 #define MUNCHKIN_H
-
+#include "CardGroup.h"
 #include "Project.h"
 #include "MapItem.h"
 #include "Model.h"
 class MapItem;
 class Model;
-enum CardGroup;
+
 
 class Player{
 public:
@@ -19,16 +19,8 @@ public:
 
 class Munchkin : public Screen
 {
-	struct Properties{
-		int x,y,  playerNumber;
-		CardGroup vectorName;
-		Properties(CardGroup vN, int pN):vectorName(vN),playerNumber(pN){}
-		Properties(){}
-	};
-
-	typedef std::pair<std::vector<int>::iterator, Properties> pCardMap;
-	typedef std::map<std::vector<int>::iterator, Properties> mCardMap;
 	typedef std::vector< std::unique_ptr<MapItem> > vMap;
+
 	struct FindCard{
 		FindCard(int x, int y) : x_(x), y_(y){}
 		bool operator()(const std::unique_ptr<MapItem> &a) const;
@@ -39,6 +31,7 @@ class Munchkin : public Screen
 private:
 	Input* input;
 	Graphics* graphics;
+	
 	(Image* card_map)[17];
 	Image* back;
 	Image* toMove;
@@ -47,6 +40,8 @@ private:
 	Image* imDesk;
 	Image* down;
 	Image* up;
+
+	std::unique_ptr<Model> model;
 
 	int cp, ep, totalplayers, zoomed;
 	int wW, wH, cW, cH, mapW, mapH;
@@ -60,20 +55,18 @@ private:
 	std::vector<int> monster;
 	std::vector<int> helper;
 
-	mCardMap::iterator iMapToMove;
-	bool mayToMove;
-	mCardMap cardMap;
-
+	CardPosition selectedCard;
+	bool selected;
 
 	void ShowCard(int id, int x, int y);
 	void ShowBack(int id, int x, int y);
 	void ZoomCard(int id);
-	void DragCard();
 
 	void FillMap();
-	void FillLine(Properties *properties, double col);
+	void FillLine(const CardGroup &vectorName, const int &playerNumber, const double &col);
 	void ShowMap();
 
+	void Select(CardPosition newSelect);
 	void GiveCard(int nd, int nt, int pl);
 	void GiveToAll(int nd, int nt);
 

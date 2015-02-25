@@ -32,8 +32,8 @@ protected:
 
 	virtual void Settings();
 public:
-	ButtonItem(Munchkin *v, int x, int y) : MapItem(v, x, y){;}
-	virtual void OnClickR() {;}
+	ButtonItem(Munchkin *v, int x, int y) : MapItem(v, x, y) {}
+	virtual void OnClickR() {}
 
 	virtual void Draw();
 };
@@ -47,7 +47,7 @@ protected:
 
 public:
 	void SetPlayer(int p){playerNumber=p;}
-	BindedToVector(Munchkin *v, int x, int y, CardGroup vn, int p) : ButtonItem(v, x, y), vectorName(vn), playerNumber(p){;}
+	BindedToVector(Munchkin *v, int x, int y, CardGroup vn, int p) : ButtonItem(v, x, y), vectorName(vn), playerNumber(p) {}
 };
 
 class GroupButton : public BindedToVector{				//Hand, equip, desk
@@ -73,7 +73,7 @@ class CardItem : public MapItem {						//Card
 	int id, vectorNumber, playerNumber;
 
 public:
-	CardItem(Munchkin *v, int x, int y, int id) : MapItem(v, x, y), id(id) {;}
+	CardItem(Munchkin *v, int x, int y, int id) : MapItem(v, x, y), id(id) {}
 	virtual void OnClickL();
 	virtual void OnClickR();
 	virtual void Draw();

@@ -43,26 +43,24 @@ void Munchkin::ZoomCard(int id){
 
 
 
-void Munchkin::FillLine(Properties *pr, double col){ 
+void Munchkin::FillLine(const CardGroup &vectorName, const int &playerNumber, const double &col){ 
 	std::vector<int>::iterator it;
-	for(int i=0; (i<5)&&(i<plr[pr->playerNumber].deck[pr->vectorName].size()); i++){
-		it=plr[pr->playerNumber].deck[pr->vectorName].begin()+((plr[pr->playerNumber].i[pr->vectorName]+i)%plr[pr->playerNumber].deck[pr->vectorName].size());
+	for(int i=0; (i<5)&&(i<plr[playerNumber].deck[vectorName].size()); i++){
+		it=plr[playerNumber].deck[vectorName].begin()+((plr[playerNumber].i[vectorName]+i)%plr[playerNumber].deck[vectorName].size());
 		mapOfItems.push_back(std::unique_ptr<MapItem> (new CardItem (this, cW*col,       (0.25+i)*cH, *it)));
 	}
-	mapOfItems.push_back(std::unique_ptr<MapItem> (new GroupButton  (this, cW*col,       0,           pr->vectorName,pr->playerNumber)));
-	mapOfItems.push_back(std::unique_ptr<MapItem> (new UpButton     (this, cW*col,       5.25*cH,     pr->vectorName,pr->playerNumber)));
-	mapOfItems.push_back(std::unique_ptr<MapItem> (new DownButton   (this, cW*(col+0.5), 5.25*cH,     pr->vectorName,pr->playerNumber)));
-	delete pr;
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new GroupButton  (this, cW*col,       0,           vectorName, playerNumber)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new UpButton     (this, cW*col,       5.25*cH,     vectorName, playerNumber)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new DownButton   (this, cW*(col+0.5), 5.25*cH,     vectorName, playerNumber)));
 }
 void Munchkin::FillMap(){
-	cardMap.clear();
 	mapOfItems.clear();
-	FillLine(new Properties(HAND, cp), 0.1);
-	FillLine(new Properties(EQUIP,cp), 1.2);
-	FillLine(new Properties(DESK, cp), 2.3);
-	FillLine(new Properties(DESK, ep), 7.8);
-	FillLine(new Properties(EQUIP,ep), 8.9);
-	FillLine(new Properties(HAND, ep), 10.0);
+	FillLine(HAND, cp, 0.1);
+	FillLine(EQUIP,cp, 1.2);
+	FillLine(DESK, cp, 2.3);
+	FillLine(DESK, ep, 7.8);
+	FillLine(EQUIP,ep, 8.9);
+	FillLine(HAND, ep, 10.0);
 
 
 
@@ -70,17 +68,34 @@ void Munchkin::FillMap(){
 
 void Munchkin::ShowMap(){
 	FillMap();
-	for(mCardMap::iterator it=cardMap.begin(); it != cardMap.end(); ++it){
-		if ( (it->second.playerNumber==ep) && (!(it->second.vectorName)) ) {
-			ShowBack(*it->first, it->second.x, it->second.y);
-		} else {
-			ShowCard(*it->first, it->second.x, it->second.y);
-		}
-	}
-	if (mayToMove) {
-		if (iMapToMove!=cardMap.end())	graphics->DrawImage(toMove, iMapToMove->second.x, iMapToMove->second.y, 0, 0, mapW/5, mapH/2, cW, cH);
-	}
+	
 	for (std::vector<std::unique_ptr<MapItem> >::iterator it=mapOfItems.begin(); it!=mapOfItems.end(); ++it) (*it)->Draw();
+	
+/*	if (mayToMove) {
+		if (iMapToMove!=cardMap.end())	graphics->DrawImage(toMove, iMapToMove->second.x, iMapToMove->second.y, 0, 0, mapW/5, mapH/2, cW, cH);
+	}*/
+}
+
+void Munchkin::Select(CardPosition newSelect){
+	if (selectedCard==newSelect) {
+		
+		selected=!selected;
+	
+	} else {
+
+		if (selected){
+
+			selected=false;
+			model->TryMove(selectedCard, newSelect);
+
+		} else {
+
+			selected=true;
+			selectedCard=newSelect;
+
+		}
+
+	}
 }
 
 void Munchkin::GiveCard(int nd, int nt, int pl){
@@ -111,10 +126,11 @@ void Munchkin::ReDraw(){
 void Munchkin::Start()
 {
 	StartSettings();
+	model(new Model);
+	selected=false;
 	totalplayers=2;
 	plr.resize(totalplayers);
 	cp=0; ep=1;
-	mayToMove=false;
 
 	srand(time(NULL));
 
@@ -148,8 +164,8 @@ void Munchkin::Update()
 		game->Exit();
 	}
 
-	//Zoom
-	if(input->IsMouseButtonDown(3)) { 
+	
+	if(input->IsMouseButtonDown(3)) {							//Zoom
 
 		x=input->GetButtonDownCoords().x;
 		y=input->GetButtonDownCoords().y;
@@ -159,38 +175,18 @@ void Munchkin::Update()
 
 	} 
 
-	//Left-click
-	if(input->IsMouseButtonDown(1)) {
+	
+	if(input->IsMouseButtonDown(1)) {							//Left-click
+
+		while(!(input->IsMouseButtonUp(1))){input->Update();}	//Freeze until button up prevents recur of next chunk
+		
 		x=input->GetButtonDownCoords().x;
 		y=input->GetButtonDownCoords().y;
 
-		while(!(input->IsMouseButtonUp(1))){input->Update();} //Freeze until button up prevents recur of next chunk
-
-/*		mCardMap::iterator it = find_if(cardMap.begin(),cardMap.end(),FindCard(x,y,cW,cH));
-		//		if (it==windowMap.end()) it = find_if(backMap.begin(),backMap.end(),FindCard(x,y,cW,cH));
-
-		if (it!=cardMap.end()) {
-			if (iMapToMove==it){ 
-				mayToMove=!mayToMove;
-			} 
-			else {
-				if (mayToMove) {
-					mayToMove=false;
-					if ((iMapToMove->second.playerNumber!=it->second.playerNumber)||(iMapToMove->second.vectorName!=it->second.vectorName)){
-						plr[it->second.playerNumber].deck[it->second.vectorName].insert(it->first, *iMapToMove->first);
-						plr[iMapToMove->second.playerNumber].deck[iMapToMove->second.vectorName].erase(iMapToMove->first);
-					}else{
-						std::swap(*it->first,*iMapToMove->first);
-					}
-
-				} 
-				else {
-					mayToMove=true;
-					iMapToMove=it;
-				}
-			}
-		}*/
+		vMap::iterator it = find_if(mapOfItems.begin(), mapOfItems.end(),FindCard(x,y));
+		if (it!=mapOfItems.end()) (*it)->OnClickL();
 	}
+
 	ReDraw();
 }
 

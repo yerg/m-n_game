@@ -70,7 +70,7 @@ void DownButton::OnClickL(){
 }
 
 void GroupButton::OnClickL(){
-	////////////////////
+	
 }
 
 void CardItem::Draw(){
