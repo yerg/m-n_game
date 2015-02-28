@@ -55,7 +55,7 @@ UpButton::UpButton(Munchkin *v, int x, int y, CardGroup vn, int p) : BindedToVec
 }
 
 void UpButton::OnClickL(){
-	--view->plr[playerNumber].i[vectorName];
+	view->UpCount(playerNumber,vectorName);
 }
 
 DownButton::DownButton(Munchkin *v, int x, int y, CardGroup vn, int p) : BindedToVector(v, x, y, vn, p){
@@ -66,21 +66,29 @@ DownButton::DownButton(Munchkin *v, int x, int y, CardGroup vn, int p) : BindedT
 }
 
 void DownButton::OnClickL(){
-	++view->plr[playerNumber].i[vectorName];
+	view->DownCount(playerNumber,vectorName);
 }
 
 void GroupButton::OnClickL(){
-	
+	if (view->selected==true){
+		CardPosition tmp;
+		tmp.playerNumber=playerNumber;
+		tmp.vectorName=vectorName;
+		tmp.position=0;
+		(*view).model->TryMove(view->selectedCard,tmp);
+		view->selected=false;
+	}
 }
 
 void CardItem::Draw(){
-	view->ShowCard(id,x,y);
+	view->ShowCard(view->snapshot.plr.at(pos.playerNumber).deck[pos.vectorName].at(pos.position),x,y);
+	if ((view->selected)&&(pos==view->selectedCard)) view->ShowSelect(x,y);
 }
 
 void CardItem::OnClickR(){
-	view->zoomed=id;
+	view->zoomed=view->snapshot.plr.at(pos.playerNumber).deck[pos.vectorName].at(pos.position);
 }
 
 void CardItem::OnClickL(){
-	///////////////////////
+	view->Select(pos);
 }

@@ -1,17 +1,10 @@
 #ifndef MODEL_H
 #define MODEL_H
 #include "CardGroup.h"
-#include "Munchkin.h"
-class Model {
+#include "Project.h"
 
-	struct Player{
-	
-	public:
-		std::vector<int> deck[3];
-		int level;
-		bool gender;
-		Player():level(1),gender(true){deck[HAND].reserve(10); deck[EQUIP].reserve(10); deck[DESK].reserve(10);};
-	};
+
+class Model {
 
 	int totalplayers;
 
@@ -25,8 +18,8 @@ class Model {
 	void GiveToAll(int nd, int nt);
 	void StartGame();
 public:
-	Model(){StartGame();}
-	
+	Model(int n) : totalplayers(n){StartGame();}
+	Snapshot GetData(int cp);
 	void TryMove(CardPosition from, CardPosition to);
 };
 

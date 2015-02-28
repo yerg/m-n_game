@@ -1,6 +1,6 @@
 #ifndef PROJECT_H
 #define PROJECT_H
-
+#pragma warning (disable:4244)
 
 #include <SDL.h>
 #include <cstring>
@@ -21,5 +21,4 @@
 
 #include "MapItem.h"
 #include "Munchkin.h"
-
 #endif

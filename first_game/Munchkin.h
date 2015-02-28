@@ -1,21 +1,15 @@
 #ifndef MUNCHKIN_H
 #define MUNCHKIN_H
+
+
 #include "CardGroup.h"
 #include "Project.h"
 #include "MapItem.h"
 #include "Model.h"
+
 class MapItem;
 class Model;
 
-
-class Player{
-public:
-	std::vector<int> deck[3];
-	unsigned int i[3];
-	int level;
-	bool gender;
-	Player():level(1),gender(true){i[HAND]=0; i[EQUIP]=0; i[DESK]=0; deck[HAND].reserve(10); deck[EQUIP].reserve(10); deck[DESK].reserve(10);};
-};
 
 class Munchkin : public Screen
 {
@@ -26,6 +20,16 @@ class Munchkin : public Screen
 		bool operator()(const std::unique_ptr<MapItem> &a) const;
 	private:
 		int x_, y_;
+	};
+
+	class Int3{
+		unsigned int _0;
+		unsigned int _1;
+		unsigned int _2;
+	public:
+		Int3():_0(0),_1(0),_2(0){}
+		Int3(unsigned int a,unsigned int b,unsigned int c): _0(a), _1(b), _2(c){}
+		unsigned int& operator[](const CardGroup &i){if (i==HAND) return _0; if (i==EQUIP) return _1; return _2;}
 	};
 
 private:
@@ -40,35 +44,34 @@ private:
 	Image* imDesk;
 	Image* down;
 	Image* up;
-
-	std::unique_ptr<Model> model;
-
-	int cp, ep, totalplayers, zoomed;
-	int wW, wH, cW, cH, mapW, mapH;
-	double cardRatio;
 	
-	vMap mapOfItems;
+	std::shared_ptr<Model> model;
+	Snapshot snapshot;
 	
-	std::vector<Player> plr;
-
-	std::vector<int> doors,treasures,rd,rt;
-	std::vector<int> monster;
-	std::vector<int> helper;
-
+	std::vector<Int3> counter;
+	int zoomed, cp, ep, totalplayers;
+	
 	CardPosition selectedCard;
 	bool selected;
+	
+	int wW, wH, cW, cH, mapW, mapH;
+	double cardRatio;
 
+	vMap mapOfItems;
+	
+
+
+	void ShowSelect(int x, int y);
 	void ShowCard(int id, int x, int y);
-	void ShowBack(int id, int x, int y);
 	void ZoomCard(int id);
 
 	void FillMap();
 	void FillLine(const CardGroup &vectorName, const int &playerNumber, const double &col);
 	void ShowMap();
-
+	void UpCount(const int &playerNumber, const CardGroup &cardGroup);
+	void DownCount (const int &playerNumber, const CardGroup &cardGroup);
+	void UpdateCounters();
 	void Select(CardPosition newSelect);
-	void GiveCard(int nd, int nt, int pl);
-	void GiveToAll(int nd, int nt);
 
 	void StartSettings();
 	void ReDraw();

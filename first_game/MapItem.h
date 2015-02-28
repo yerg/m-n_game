@@ -70,10 +70,9 @@ public:
 
 
 class CardItem : public MapItem {						//Card 
-	int id, vectorNumber, playerNumber;
-
+	CardPosition pos;
 public:
-	CardItem(Munchkin *v, int x, int y, int id) : MapItem(v, x, y), id(id) {}
+	CardItem(Munchkin *v, int x, int y, CardPosition pos) : MapItem(v, x, y), pos(pos) {}
 	virtual void OnClickL();
 	virtual void OnClickR();
 	virtual void Draw();

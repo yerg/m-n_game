@@ -11,11 +11,13 @@ void Munchkin::StartSettings()
 	graphics = game->GetGraphics();
 	for (int i=0; i<17; i++)
 	{
+#pragma warning (push) 
+#pragma warning (disable:4996)
 		char filename[20]; char letter[2]={'a'+i,'\0'};
 		strcpy(filename,"res\\");
 		strcat(filename, letter);
 		strcat(filename, ".jpg");
-
+#pragma warning (pop)
 		card_map[i]=graphics->NewImage(filename);
 	}
 	back=graphics->NewImage("res\\back.jpg");
@@ -30,24 +32,32 @@ void Munchkin::StartSettings()
 	cardRatio=static_cast<double>(mapW/5)/static_cast<double>(mapH/2);
 }
 
+void Munchkin::ShowSelect(int x, int y){
+	graphics->DrawImage    (toMove,           x,               y, 0,             0,                               mapW/5, mapH/2,  cW,           cH);
+}
 
 void Munchkin::ShowCard(int id, int x, int y){
-	graphics->DrawImage(card_map[id/10],  x,               y,  (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0,          mapW/5,  mapH/2, cW,           cH);
+	if (id<0) {
+		graphics->DrawImage(back,             x,               y, 0,             id==-1    ? 0      : mapH/2,     mapW/5,  mapH/2, cW,           cH);
+	} else {
+		graphics->DrawImage(card_map[id/10],  x,               y, (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0,          mapW/5,  mapH/2, cW,           cH);
+	}
 }
-void Munchkin::ShowBack(int id, int x, int y){
-	graphics->DrawImage(back,             x,               y,  0,             id<95     ? 0      :    mapH/2,  mapW/5,  mapH/2, cW,           cH);
-}
+
 void Munchkin::ZoomCard(int id){
-	graphics->DrawImage(card_map[id/10],  wW-cardRatio*wH, 0,  (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0,          mapW/5,  mapH/2, cardRatio*wH, wH);
+	if (id>=0){
+		graphics->DrawImage(card_map[id/10],  wW-cardRatio*wH, 0, (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0,          mapW/5,  mapH/2, cardRatio*wH, wH);
+	}
 }
-
-
 
 void Munchkin::FillLine(const CardGroup &vectorName, const int &playerNumber, const double &col){ 
-	std::vector<int>::iterator it;
-	for(int i=0; (i<5)&&(i<plr[playerNumber].deck[vectorName].size()); i++){
-		it=plr[playerNumber].deck[vectorName].begin()+((plr[playerNumber].i[vectorName]+i)%plr[playerNumber].deck[vectorName].size());
-		mapOfItems.push_back(std::unique_ptr<MapItem> (new CardItem (this, cW*col,       (0.25+i)*cH, *it)));
+	CardPosition card; 
+	card.vectorName=vectorName;
+	card.playerNumber=playerNumber;
+	int size=snapshot.plr[playerNumber].deck[vectorName].size();
+	for(int i=0; (i<5)&&(i<size); i++){
+		card.position=(counter[playerNumber][vectorName]+i)%size;
+		mapOfItems.push_back(std::unique_ptr<MapItem> (new CardItem (this, cW*col,       (0.25+i)*cH, card)));
 	}
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new GroupButton  (this, cW*col,       0,           vectorName, playerNumber)));
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new UpButton     (this, cW*col,       5.25*cH,     vectorName, playerNumber)));
@@ -62,18 +72,13 @@ void Munchkin::FillMap(){
 	FillLine(EQUIP,ep, 8.9);
 	FillLine(HAND, ep, 10.0);
 
-
-
 }
 
 void Munchkin::ShowMap(){
 	FillMap();
 	
 	for (std::vector<std::unique_ptr<MapItem> >::iterator it=mapOfItems.begin(); it!=mapOfItems.end(); ++it) (*it)->Draw();
-	
-/*	if (mayToMove) {
-		if (iMapToMove!=cardMap.end())	graphics->DrawImage(toMove, iMapToMove->second.x, iMapToMove->second.y, 0, 0, mapW/5, mapH/2, cW, cH);
-	}*/
+
 }
 
 void Munchkin::Select(CardPosition newSelect){
@@ -86,6 +91,7 @@ void Munchkin::Select(CardPosition newSelect){
 		if (selected){
 
 			selected=false;
+			newSelect.position+=1;
 			model->TryMove(selectedCard, newSelect);
 
 		} else {
@@ -98,23 +104,48 @@ void Munchkin::Select(CardPosition newSelect){
 	}
 }
 
-void Munchkin::GiveCard(int nd, int nt, int pl){
-	while (nd){
-		plr[pl].deck[0].push_back(doors.back());
-		doors.pop_back();
-		--nd;
+void Munchkin::UpCount(const int &playerNumber, const CardGroup &cardGroup){
+	int size=snapshot.plr.at(playerNumber).deck[cardGroup].size();
+	if (size<2) {
+		counter.at(playerNumber)[cardGroup]=0;
+		return;
 	}
-	while (nt){
-		plr[pl].deck[0].push_back(treasures.back());
-		treasures.pop_back();
-		--nt;
+	if (counter.at(playerNumber)[cardGroup]+1>=size){
+		counter.at(playerNumber)[cardGroup]=0;
+	} else {
+		++counter.at(playerNumber)[cardGroup];
 	}
 }
-void Munchkin::GiveToAll(int nd, int nt){
-	for (int i=0; i<totalplayers; i++) GiveCard(nd,nt,i);
+
+void Munchkin::DownCount(const int &playerNumber, const CardGroup &cardGroup){
+	int size=snapshot.plr.at(playerNumber).deck[cardGroup].size();
+	if (size<2) {
+		counter.at(playerNumber)[cardGroup]=0;
+		return;
+	}
+	if (counter.at(playerNumber)[cardGroup]==0) {
+		counter.at(playerNumber)[cardGroup]=size-1;
+	} else if (counter.at(playerNumber)[cardGroup]>=size){
+		counter.at(playerNumber)[cardGroup]=size-2;
+	} else {
+		--counter.at(playerNumber)[cardGroup];
+	}
+}
+
+void Munchkin::UpdateCounters(){
+	for (int i=0; i<totalplayers; i++){
+		for (int j=0; j<3; j++){
+			if (snapshot.plr.at(i).deck[j].size()<2) {
+				counter.at(i)[CardGroup(j)]=0;
+			} else if (counter.at(i)[CardGroup(j)]>=snapshot.plr.at(i).deck[j].size()) {
+				counter.at(i)[CardGroup(j)]=snapshot.plr.at(i).deck[j].size()-1;
+			}
+		}
+	}
 }
 
 void Munchkin::ReDraw(){
+	snapshot=model->GetData(cp);
 	graphics->GetWindowSize(wW, wH);
 	cH=wH/5.5;
 	cW=cardRatio*cH;
@@ -126,34 +157,15 @@ void Munchkin::ReDraw(){
 void Munchkin::Start()
 {
 	StartSettings();
-	model(new Model);
-	selected=false;
 	totalplayers=2;
-	plr.resize(totalplayers);
+	model=std::make_shared<Model>(totalplayers);
+	counter.resize(totalplayers);
+	
+	Int3 a(0,0,0);
+	std::fill(counter.begin(),counter.end(),a);
+	selected=false;
 	cp=0; ep=1;
 
-	srand(time(NULL));
-
-	doors.reserve(95);
-	rd.reserve(95);
-	for(int i=0; i<95;i++) doors.push_back(i);
-	random_shuffle(doors.begin(),doors.end());
-
-	treasures.reserve(75);
-	rt.reserve(75);
-	for(int i=95; i<170;i++) treasures.push_back(i);
-	random_shuffle(treasures.begin(),treasures.end());
-	GiveToAll(4,4);
-
-	int a[]={132,12,1,66,64,153};
-	plr[ep].i[0]=4;
-	plr[ep].i[1]=3;
-	plr[ep].i[2]=4;
-	plr[ep].deck[0].assign(a,a+sizeof(a)/sizeof(int));
-	plr[ep].deck[1].assign(a,a+sizeof(a)/sizeof(int));
-	plr[ep].deck[2].assign(a,a+4);
-	plr[cp].deck[1].assign(a,a+1);
-	plr[cp].deck[2].assign(a,a+1);
 	ReDraw();
 }
 
