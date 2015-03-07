@@ -3,6 +3,7 @@
 
 #include <vector>
 enum CardGroup {HAND,EQUIP,DESK};
+enum Phase {BEGIN,KICKOPEN,COMBAT,CHARITY,DEATH};
 struct CardPosition {
 	CardGroup vectorName;
 	int playerNumber;
@@ -25,5 +26,7 @@ struct Snapshot{
 	std::vector<Player> plr;
 	std::vector<int> monster;
 	std::vector<int>  helper;
+	Phase phase;
+	int plrTurn;
 };
 #endif

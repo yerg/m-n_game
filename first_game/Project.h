@@ -3,6 +3,7 @@
 #pragma warning (disable:4244)
 
 #include <SDL.h>
+#include <SDL_thread.h>
 #include <cstring>
 #include <iostream>
 #include <ctime>

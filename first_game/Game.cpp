@@ -26,7 +26,6 @@ int Game::Execute(Screen* startscreen, int width, int height, const char *title)
 	delete input;
 	delete screen;
 
-	SDL_Quit();
 	return 0;
 }
 

@@ -8,10 +8,11 @@ class Image;
 class Graphics
 {
 private:
-	SDL_Renderer* Renderer;
+	SDL_Renderer* renderer;
 	SDL_Window* mainWindow;
 public:
 	Graphics(int width, int height, const char *title);
+	~Graphics();
 	Image* NewImage(char* file);
 	Image* NewImage(char* file, int r, int g, int b);
 	bool DrawImage(Image* img, int x, int y);

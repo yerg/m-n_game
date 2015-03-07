@@ -47,5 +47,5 @@ byte Input::GetPressedKey()
 
 bool Input::IsExit()
 {
-	return (evt.type == SDL_QUIT);
+	return (evt.type == SDL_QUIT || (evt.type == SDL_WINDOWEVENT ? evt.window.event==SDL_WINDOWEVENT_CLOSE : 0) );
 }

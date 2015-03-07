@@ -60,7 +60,6 @@ private:
 	vMap mapOfItems;
 	
 
-
 	void ShowSelect(int x, int y);
 	void ShowCard(int id, int x, int y);
 	void ZoomCard(int id);
@@ -75,7 +74,7 @@ private:
 
 	void StartSettings();
 	void ReDraw();
-
+	
 	friend class MapItem;
 	friend class ButtonItem; 
 	friend class BindedToVector;
@@ -86,6 +85,8 @@ private:
 public:
 	void Start();
 	void Update();
+	Munchkin(std::shared_ptr<Model> model, int totalplayers, int cp): model(model), totalplayers(totalplayers), cp(cp){}
+
 };
 
 

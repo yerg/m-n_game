@@ -91,10 +91,9 @@ void Munchkin::Select(CardPosition newSelect){
 		if (selected){
 
 			selected=false;
-			newSelect.position+=1;
 			model->TryMove(selectedCard, newSelect);
 
-		} else {
+  		} else {
 
 			selected=true;
 			selectedCard=newSelect;
@@ -104,7 +103,7 @@ void Munchkin::Select(CardPosition newSelect){
 	}
 }
 
-void Munchkin::UpCount(const int &playerNumber, const CardGroup &cardGroup){
+void Munchkin::DownCount(const int &playerNumber, const CardGroup &cardGroup){
 	int size=snapshot.plr.at(playerNumber).deck[cardGroup].size();
 	if (size<2) {
 		counter.at(playerNumber)[cardGroup]=0;
@@ -117,7 +116,7 @@ void Munchkin::UpCount(const int &playerNumber, const CardGroup &cardGroup){
 	}
 }
 
-void Munchkin::DownCount(const int &playerNumber, const CardGroup &cardGroup){
+void Munchkin::UpCount(const int &playerNumber, const CardGroup &cardGroup){
 	int size=snapshot.plr.at(playerNumber).deck[cardGroup].size();
 	if (size<2) {
 		counter.at(playerNumber)[cardGroup]=0;
@@ -157,14 +156,16 @@ void Munchkin::ReDraw(){
 void Munchkin::Start()
 {
 	StartSettings();
-	totalplayers=2;
-	model=std::make_shared<Model>(totalplayers);
 	counter.resize(totalplayers);
 	
 	Int3 a(0,0,0);
 	std::fill(counter.begin(),counter.end(),a);
 	selected=false;
-	cp=0; ep=1;
+	if (cp) {
+		ep=0;
+	} else {
+		ep=1;
+	}
 
 	ReDraw();
 }

@@ -74,7 +74,7 @@ void GroupButton::OnClickL(){
 		CardPosition tmp;
 		tmp.playerNumber=playerNumber;
 		tmp.vectorName=vectorName;
-		tmp.position=0;
+		tmp.position=-1;
 		(*view).model->TryMove(view->selectedCard,tmp);
 		view->selected=false;
 	}

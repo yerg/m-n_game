@@ -1,17 +1,20 @@
 #include "Graphics.h"
 Graphics::Graphics(int width, int height, const char *title)
 {
-	int retval = SDL_Init(SDL_INIT_EVERYTHING);
-	if (retval) std::cout<<std::endl<<SDL_GetError();
 	mainWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,	width, height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-	Renderer = SDL_CreateRenderer(mainWindow, -1, 0);
+	renderer = SDL_CreateRenderer(mainWindow, -1, 0);
+}
+
+Graphics::~Graphics(){
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(mainWindow);
 }
 
 Image* Graphics::NewImage(char* file)
 {
 	SDL_Surface* tmp = IMG_Load(file);
 	Image* image = new Image();
-	image->texture = SDL_CreateTextureFromSurface(Renderer, tmp);
+	image->texture = SDL_CreateTextureFromSurface(renderer, tmp);
 	image->h=tmp->h; 
 	image->w=tmp->w;
 	SDL_FreeSurface(tmp);
@@ -23,7 +26,7 @@ Image* Graphics::NewImage(char* file, int r, int g, int b)
 	SDL_Surface* tmp = IMG_Load(file);
 	Image* image = new Image();
 	SDL_SetColorKey(tmp, SDL_TRUE, SDL_MapRGB(tmp->format, r, g, b));
-	image->texture = SDL_CreateTextureFromSurface(Renderer, tmp);
+	image->texture = SDL_CreateTextureFromSurface(renderer, tmp);
 	image->h=tmp->h;
 	image->w=tmp->w;
 	SDL_FreeSurface(tmp);
@@ -41,7 +44,7 @@ bool Graphics::DrawImage(Image* img, int x, int y)
 
 	Area.w = img->h;
 	Area.h = img->w;
-	SDL_RenderCopy(Renderer, img->texture, NULL, &Area);
+	SDL_RenderCopy(renderer, img->texture, NULL, &Area);
 	return true;
 }
 
@@ -62,7 +65,7 @@ bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int s
 	SrcArea.w = srcW;
 	SrcArea.h = srcH;
 
-	SDL_RenderCopy(Renderer, img->texture, &SrcArea, &Area);
+	SDL_RenderCopy(renderer, img->texture, &SrcArea, &Area);
 	return true;
 }
 bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int srcW, int srcH, double scale) 
@@ -74,7 +77,7 @@ bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int s
 
 void Graphics::Flip()
 {
-	SDL_SetRenderDrawColor(Renderer, 200, 200, 200, 255);
-	SDL_RenderPresent(Renderer);
-	SDL_RenderClear(Renderer);
+	SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+	SDL_RenderPresent(renderer);
+	SDL_RenderClear(renderer);
 }
