@@ -88,7 +88,7 @@
     <ClCompile Include="Screen.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CardGroup.h" />
+    <ClInclude Include="Properties.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Graphics.h" />

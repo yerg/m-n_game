@@ -9,11 +9,11 @@ class MapItem {											//Base interface
 protected:
 	int itemWidth, itemHeight, x, y;
 	Munchkin * view;
-
+	MapItem(Munchkin *v, int x, int y);
 	virtual void Settings();
 
 public:
-	MapItem(Munchkin *v, int x, int y);
+
 	int GetW() const{return itemWidth;}
 	int GetH() const{return itemHeight;}
 	int GetX() const{return x;}
@@ -29,25 +29,42 @@ class ButtonItem : public MapItem {						//Abstract button
 protected:
 	Image *image;
 	double propH, propW;
-
+	ButtonItem(Munchkin *v, int x, int y) : MapItem(v, x, y) {}
 	virtual void Settings();
 public:
-	ButtonItem(Munchkin *v, int x, int y) : MapItem(v, x, y) {}
 	virtual void OnClickR() {}
-
 	virtual void Draw();
+};
+
+class ReadyButton : public ButtonItem{
+public:
+	ReadyButton(Munchkin *v, int x, int y);
+	virtual void OnClickL();
+};
+
+class GenderButton : public ButtonItem{
+	int playerNumber;
+public:
+	GenderButton(Munchkin *v, int x, int y, int pl);
+	virtual void OnClickL(){}
+};
+
+class LevelButton : public ButtonItem{
+	int playerNumber;
+public:
+	LevelButton(Munchkin *v, int x, int y, int pl);
+	virtual void OnClickL(){}
 };
 
 class BindedToVector : public ButtonItem {				//Abstract
 protected:
 	int playerNumber;
 	CardGroup vectorName;
-
-	virtual void Settings();
-
-public:
-	void SetPlayer(int p){playerNumber=p;}
 	BindedToVector(Munchkin *v, int x, int y, CardGroup vn, int p) : ButtonItem(v, x, y), vectorName(vn), playerNumber(p) {}
+	virtual void Settings();
+public:
+
+	void SetPlayer(int p){playerNumber=p;}
 };
 
 class GroupButton : public BindedToVector{				//Hand, equip, desk

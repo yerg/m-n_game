@@ -2,7 +2,7 @@
 #define MUNCHKIN_H
 
 
-#include "CardGroup.h"
+#include "Properties.h"
 #include "Project.h"
 #include "MapItem.h"
 #include "Model.h"
@@ -35,7 +35,6 @@ class Munchkin : public Screen
 private:
 	Input* input;
 	Graphics* graphics;
-	
 	(Image* card_map)[17];
 	Image* back;
 	Image* toMove;
@@ -44,7 +43,13 @@ private:
 	Image* imDesk;
 	Image* down;
 	Image* up;
-	
+	Image* beast;
+	Image* help;
+	Image* ready;
+	Image* lockedReady;
+	(Image* level)[9];
+	Image* male, * female;
+
 	std::shared_ptr<Model> model;
 	Snapshot snapshot;
 	
@@ -77,7 +82,10 @@ private:
 	
 	friend class MapItem;
 	friend class ButtonItem; 
-	friend class BindedToVector;
+	friend class BindedToVector;	
+	friend class ReadyButton;	
+	friend class GenderButton;
+	friend class LevelButton;
 	friend class UpButton;
 	friend class DownButton;
 	friend class GroupButton;
@@ -85,7 +93,7 @@ private:
 public:
 	void Start();
 	void Update();
-	Munchkin(std::shared_ptr<Model> model, int totalplayers, int cp): model(model), totalplayers(totalplayers), cp(cp){}
+	Munchkin(std::shared_ptr<Model> model, int totalplayers, int cp): model(model), totalplayers(totalplayers+PLAYERS), cp(cp+2){}
 
 };
 

@@ -1,7 +1,10 @@
-#ifndef CARDGROUP_H
-#define CARDGROUP_H
+#ifndef PROPERTIES_H
+#define PROPERTIES_H
 
 #include <vector>
+static const int BEAST=0;
+static const int HELP=1;
+static const int PLAYERS=2;
 enum CardGroup {HAND,EQUIP,DESK};
 enum Phase {BEGIN,KICKOPEN,COMBAT,CHARITY,DEATH};
 struct CardPosition {
@@ -24,8 +27,6 @@ struct Player{
 
 struct Snapshot{
 	std::vector<Player> plr;
-	std::vector<int> monster;
-	std::vector<int>  helper;
 	Phase phase;
 	int plrTurn;
 };

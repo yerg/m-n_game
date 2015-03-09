@@ -7,17 +7,16 @@ bool Munchkin::FindCard::operator()(const std::unique_ptr<MapItem> &a) const{
 
 void Munchkin::StartSettings()
 {
+#pragma warning (push) 
+#pragma warning (disable:4996)
 	input = game->GetInput();
 	graphics = game->GetGraphics();
 	for (int i=0; i<17; i++)
 	{
-#pragma warning (push) 
-#pragma warning (disable:4996)
 		char filename[20]; char letter[2]={'a'+i,'\0'};
 		strcpy(filename,"res\\");
 		strcat(filename, letter);
 		strcat(filename, ".jpg");
-#pragma warning (pop)
 		card_map[i]=graphics->NewImage(filename);
 	}
 	back=graphics->NewImage("res\\back.jpg");
@@ -27,9 +26,24 @@ void Munchkin::StartSettings()
 	down=graphics->NewImage("res\\down.jpg");
 	up=graphics->NewImage("res\\up.jpg");
 	toMove=graphics->NewImage("res\\select.jpg",255,255,255);
+	beast=graphics->NewImage("res\\beast.jpg");
+	help=graphics->NewImage("res\\help.jpg");
+	ready=graphics->NewImage("res\\ready.jpg");
+	lockedReady=graphics->NewImage("res\\ready_grey.jpg");
+	male=graphics->NewImage("res\\male.jpg");
+	female=graphics->NewImage("res\\female.jpg");
+	for (int i=0; i<8; i++)
+	{
+		char filename[20]; char letter[2]={'1'+i,'\0'};
+		strcpy(filename,"res\\");
+		strcat(filename, letter);
+		strcat(filename, ".jpg");
+		level[i]=graphics->NewImage(filename);
+	}
 	mapW=card_map[0]->GetWidth();
 	mapH=card_map[0]->GetHeight();
 	cardRatio=static_cast<double>(mapW/5)/static_cast<double>(mapH/2);
+#pragma warning (pop)
 }
 
 void Munchkin::ShowSelect(int x, int y){
@@ -63,15 +77,22 @@ void Munchkin::FillLine(const CardGroup &vectorName, const int &playerNumber, co
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new UpButton     (this, cW*col,       5.25*cH,     vectorName, playerNumber)));
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new DownButton   (this, cW*(col+0.5), 5.25*cH,     vectorName, playerNumber)));
 }
+
 void Munchkin::FillMap(){
 	mapOfItems.clear();
 	FillLine(HAND, cp, 0.1);
 	FillLine(EQUIP,cp, 1.2);
 	FillLine(DESK, cp, 2.3);
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new LevelButton  (this, cW*3.3, 0.25*cH, cp)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new GenderButton  (this, cW*3.3, 0.75*cH, cp)));
+	FillLine(EQUIP, BEAST, 3.9);
+	FillLine(EQUIP, HELP, 5.0);
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new ReadyButton  (this, cW*6.1, 0.25*cH)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new LevelButton  (this, cW*7.3, 0.25*cH, ep)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new GenderButton  (this, cW*7.3, 0.75*cH, ep)));
 	FillLine(DESK, ep, 7.8);
 	FillLine(EQUIP,ep, 8.9);
 	FillLine(HAND, ep, 10.0);
-
 }
 
 void Munchkin::ShowMap(){
@@ -91,7 +112,7 @@ void Munchkin::Select(CardPosition newSelect){
 		if (selected){
 
 			selected=false;
-			model->TryMove(selectedCard, newSelect);
+			model->TryMove(selectedCard, newSelect, cp);
 
   		} else {
 
@@ -161,10 +182,10 @@ void Munchkin::Start()
 	Int3 a(0,0,0);
 	std::fill(counter.begin(),counter.end(),a);
 	selected=false;
-	if (cp) {
-		ep=0;
+	if (cp==PLAYERS) {
+		ep=PLAYERS+1;
 	} else {
-		ep=1;
+		ep=PLAYERS;
 	}
 
 	ReDraw();

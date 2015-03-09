@@ -71,7 +71,7 @@
     <ClInclude Include="Model.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="CardGroup.h">
+    <ClInclude Include="Properties.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
