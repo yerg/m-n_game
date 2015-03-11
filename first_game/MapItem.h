@@ -49,10 +49,40 @@ public:
 	virtual void OnClickL(){}
 };
 
-class LevelButton : public ButtonItem{
+class LevelIcon : public ButtonItem{
 	int playerNumber;
 public:
-	LevelButton(Munchkin *v, int x, int y, int pl);
+	LevelIcon(Munchkin *v, int x, int y, int pl);
+	virtual void OnClickL(){}
+};
+
+class PhaseIcon : public ButtonItem{
+public:
+	PhaseIcon(Munchkin *v, int x, int y);
+	virtual void OnClickL(){}
+};
+
+class DiscardButton : public ButtonItem {				//TODO: 
+public:
+
+};
+
+class UpPlayer : public ButtonItem {
+public:
+	UpPlayer(Munchkin *v, int x, int y);
+	virtual void OnClickL();
+};
+
+class DownPlayer : public ButtonItem {
+public:
+	DownPlayer(Munchkin *v, int x, int y);
+	virtual void OnClickL();
+};
+
+class PlayerNumberIcon : public ButtonItem {
+	int playerNumber;
+public:
+	PlayerNumberIcon(Munchkin *v, int x, int y, int pl);
 	virtual void OnClickL(){}
 };
 

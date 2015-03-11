@@ -8,7 +8,7 @@
 #include "Model.h"
 
 class MapItem;
-class Model;
+class ModelHandler;
 
 
 class Munchkin : public Screen
@@ -50,8 +50,10 @@ private:
 	(Image* level)[9];
 	Image* male, * female;
 
-	std::shared_ptr<Model> model;
+	std::shared_ptr<ModelHandler> model;
 	Snapshot snapshot;
+	Phase phase;
+	bool phaseClicked;
 	
 	std::vector<Int3> counter;
 	int zoomed, cp, ep, totalplayers;
@@ -85,15 +87,19 @@ private:
 	friend class BindedToVector;	
 	friend class ReadyButton;	
 	friend class GenderButton;
-	friend class LevelButton;
+	friend class LevelIcon;
 	friend class UpButton;
 	friend class DownButton;
 	friend class GroupButton;
 	friend class CardItem;
+	friend class UpPlayer;
+	friend class DownPlayer;
+	friend class PlayerNumberIcon;
+	friend class DiscardButton;
 public:
 	void Start();
 	void Update();
-	Munchkin(std::shared_ptr<Model> model, int totalplayers, int cp): model(model), totalplayers(totalplayers+PLAYERS), cp(cp+2){}
+	Munchkin(std::shared_ptr<ModelHandler> model, int totalplayers, int cp): model(model), totalplayers(totalplayers+PLAYERS), cp(cp+2){}
 
 };
 

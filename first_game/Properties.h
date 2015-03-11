@@ -2,9 +2,12 @@
 #define PROPERTIES_H
 
 #include <vector>
-static const int BEAST=0;
+static const int FOE=0;
 static const int HELP=1;
 static const int PLAYERS=2;
+enum CardType {BEAST};
+//enum DoorType {EQUIP,USE};
+//enum TreashureType {EQUIP,ONEOFF};
 enum CardGroup {HAND,EQUIP,DESK};
 enum Phase {BEGIN,KICKOPEN,COMBAT,CHARITY,DEATH};
 struct CardPosition {
@@ -30,4 +33,14 @@ struct Snapshot{
 	Phase phase;
 	int plrTurn;
 };
+
+struct ModelData{
+	int totalplayers;
+	int plrTurn;
+	Phase phase;
+	std::vector<int> inCombat;
+	std::vector<Player> plr;
+	std::vector<int> doors,treasures,rd,rt;
+};
+
 #endif

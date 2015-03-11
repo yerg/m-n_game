@@ -6,13 +6,13 @@ int MunchkinWindow (void* a);
 
 struct Arguments{
 	int totalplayers, cp;
-	std::shared_ptr<Model> model;
+	std::shared_ptr<ModelHandler> model;
 };
 
 int main(int argc, char* argv[]) {
 	Arguments arg, arg1;
 	arg.totalplayers=2;
-	arg.model=std::make_shared<Model>(arg.totalplayers);
+	arg.model=std::make_shared<ModelHandler>(arg.totalplayers);
 	arg.cp=1;
 
 	int retval = SDL_Init(SDL_INIT_EVERYTHING);

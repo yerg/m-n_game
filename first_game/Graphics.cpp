@@ -77,7 +77,7 @@ bool Graphics::DrawImage(Image* img, int x, int y, int startX, int startY, int s
 
 void Graphics::Flip()
 {
-	SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_RenderPresent(renderer);
 	SDL_RenderClear(renderer);
 }

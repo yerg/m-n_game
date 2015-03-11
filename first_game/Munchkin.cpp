@@ -60,8 +60,8 @@ void Munchkin::ShowCard(int id, int x, int y){
 
 void Munchkin::ZoomCard(int id){
 	if (id>=0){
-		graphics->DrawImage(card_map[id/10],  wW-cardRatio*wH, 0, (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0,          mapW/5,  mapH/2, cardRatio*wH, wH);
-	}
+		graphics->DrawImage(card_map[id/10],  11.6*cW, 0, (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0,          mapW/5,  mapH/2, cardRatio*wH, wH);
+	} //wW-cardRatio*wH   as alternate x parameter(for allign to right border)
 }
 
 void Munchkin::FillLine(const CardGroup &vectorName, const int &playerNumber, const double &col){ 
@@ -71,11 +71,11 @@ void Munchkin::FillLine(const CardGroup &vectorName, const int &playerNumber, co
 	int size=snapshot.plr[playerNumber].deck[vectorName].size();
 	for(int i=0; (i<5)&&(i<size); i++){
 		card.position=(counter[playerNumber][vectorName]+i)%size;
-		mapOfItems.push_back(std::unique_ptr<MapItem> (new CardItem (this, cW*col,       (0.25+i)*cH, card)));
+		mapOfItems.push_back(std::unique_ptr<MapItem> (new CardItem     (this, cW*col,       (0.25+i)*cH, card)));
 	}
-	mapOfItems.push_back(std::unique_ptr<MapItem> (new GroupButton  (this, cW*col,       0,           vectorName, playerNumber)));
-	mapOfItems.push_back(std::unique_ptr<MapItem> (new UpButton     (this, cW*col,       5.25*cH,     vectorName, playerNumber)));
-	mapOfItems.push_back(std::unique_ptr<MapItem> (new DownButton   (this, cW*(col+0.5), 5.25*cH,     vectorName, playerNumber)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new GroupButton      (this, cW*col,       0,           vectorName, playerNumber)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new UpButton         (this, cW*col,       5.25*cH,     vectorName, playerNumber)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new DownButton       (this, cW*(col+0.5), 5.25*cH,     vectorName, playerNumber)));
 }
 
 void Munchkin::FillMap(){
@@ -83,13 +83,17 @@ void Munchkin::FillMap(){
 	FillLine(HAND, cp, 0.1);
 	FillLine(EQUIP,cp, 1.2);
 	FillLine(DESK, cp, 2.3);
-	mapOfItems.push_back(std::unique_ptr<MapItem> (new LevelButton  (this, cW*3.3, 0.25*cH, cp)));
-	mapOfItems.push_back(std::unique_ptr<MapItem> (new GenderButton  (this, cW*3.3, 0.75*cH, cp)));
-	FillLine(EQUIP, BEAST, 3.9);
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new LevelIcon        (this, cW*3.3, 0.25*cH, cp)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new GenderButton     (this, cW*3.3, 0.75*cH, cp)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new PlayerNumberIcon (this, cW*3.3, 4.5 *cH, cp)));
+	FillLine(EQUIP, FOE, 3.9);
 	FillLine(EQUIP, HELP, 5.0);
-	mapOfItems.push_back(std::unique_ptr<MapItem> (new ReadyButton  (this, cW*6.1, 0.25*cH)));
-	mapOfItems.push_back(std::unique_ptr<MapItem> (new LevelButton  (this, cW*7.3, 0.25*cH, ep)));
-	mapOfItems.push_back(std::unique_ptr<MapItem> (new GenderButton  (this, cW*7.3, 0.75*cH, ep)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new ReadyButton      (this, cW*6.1, 0.25*cH)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new LevelIcon        (this, cW*7.3, 0.25*cH, ep)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new GenderButton     (this, cW*7.3, 0.75*cH, ep)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new UpPlayer         (this, cW*7.3, 4.25*cH)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new PlayerNumberIcon (this, cW*7.3, 4.5 *cH, ep)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new DownPlayer       (this, cW*7.3, 5   *cH)));
 	FillLine(DESK, ep, 7.8);
 	FillLine(EQUIP,ep, 8.9);
 	FillLine(HAND, ep, 10.0);
@@ -165,7 +169,13 @@ void Munchkin::UpdateCounters(){
 }
 
 void Munchkin::ReDraw(){
+
 	snapshot=model->GetData(cp);
+	if (snapshot.phase!=phase) {
+		std::cout<<std::endl<<snapshot.phase<<"  "<<cp-PLAYERS+1;
+		phaseClicked=false;
+	}
+	phase=snapshot.phase;
 	graphics->GetWindowSize(wW, wH);
 	cH=wH/5.5;
 	cW=cardRatio*cH;
@@ -187,7 +197,7 @@ void Munchkin::Start()
 	} else {
 		ep=PLAYERS;
 	}
-
+	phaseClicked=false;
 	ReDraw();
 }
 
