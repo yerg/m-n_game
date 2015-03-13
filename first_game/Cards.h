@@ -8,29 +8,39 @@ class Card{
 protected:
 	ModelData* d;
 	CardType cType;
-	std::map<int, Card*>* map;
-	Card (ModelData* d, std::map<int, Card*>* map): d(d), map(map){}
+	StackType sType;
+	const std::map<int, Card*>* const map;
+	Card (ModelData* d, const std::map<int, Card*>* const map): d(d), map(map){}
 	friend class Cards;
 };
 
-class StrategyPreparation {
-	void Handle(){}
+struct StrategyPreparation {
+	virtual void Handle(ModelData*d){
+		d->phase=COMBAT;
+	}
 };
 
-class StrategyEscape {
-
+struct StrategyEscape {
+	virtual bool Handle(ModelData*d, const std::map<int, Card*>* const map){
+		int i=rand()%6;
+		return i>3;
+	}
 };
 
-class StrategyCombat {
-
+struct StrategyCombat {
+	virtual int Handle(ModelData*d, const std::map<int, Card*>* const map){
+		return true;
+	}
 };
 
-class StrategyWin {
+struct StrategyWin {
+	virtual void Handle(ModelData*d, int gainCard, int gainLevel){
 
+	}
 };
 
-class StrategyDefeat {
-
+struct StrategyDefeat {
+	virtual void Handle(ModelData*d);
 };
 
 class Beast : public Card{
@@ -43,18 +53,20 @@ class Beast : public Card{
 	StrategyWin* sw;
 	StrategyDefeat* sd;
 public:
-	Beast(ModelData* d, std::map<int, Card*>* map, StrategyDefeat* sd, int level, int gainCard, int gainLevel=1, bool undead=false);
+	Beast(ModelData* d, const std::map<int, Card*>* const map, StrategyDefeat* sd, int level, int gainCard, int gainLevel=1, bool undead=false);
+	void Preparation() {sp->Handle(d);}
+	bool Escape() {return se->Handle(d, map);}
+	void Defeat() {sd->Handle(d);}
+	int Combat() {return sc->Handle(d, map);}
+	void Win() {sw->Handle(d, gainCard,gainLevel);}
 
-
-
-/*	void SetPreparation(StrategyPreparation* spSet);
+	void SetPreparation(StrategyPreparation* spSet);
 	void SetCombat(StrategyCombat* scSet);
 	void SetEscape(StrategyEscape* seSet);
 	void SetWin(StrategyWin* swSet);
-	void SetDefeat(StrategyDefeat* sdSet); */ //saved for closed architecture
 };
 
-
+class 
 
 class Cards{
 	std::map<int, Card*> c;

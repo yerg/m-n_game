@@ -99,7 +99,7 @@ private:
 public:
 	void Start();
 	void Update();
-	Munchkin(std::shared_ptr<ModelHandler> model, int totalplayers, int cp): model(model), totalplayers(totalplayers+PLAYERS), cp(cp+2){}
+	Munchkin(std::shared_ptr<ModelHandler> model, int totalplayers, int cp): model(model), totalplayers(totalplayers+FIRSTPLAYER), cp(cp+2){}
 
 };
 

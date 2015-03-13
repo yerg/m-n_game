@@ -64,7 +64,7 @@ UpPlayer::UpPlayer(Munchkin *v, int x, int y) : ButtonItem(v,x,y) {
 
 void UpPlayer::OnClickL(){
 	++view->ep;
-	if (view->ep>=view->totalplayers) view->ep=PLAYERS;
+	if (view->ep>=view->totalplayers) view->ep=FIRSTPLAYER;
 	if (view->ep==view->cp) OnClickL();
 }
 
@@ -77,13 +77,13 @@ DownPlayer::DownPlayer(Munchkin *v, int x, int y) : ButtonItem(v,x,y) {
 
 void DownPlayer::OnClickL(){
 	--view->ep;
-	if (view->ep<PLAYERS) view->ep=view->totalplayers-1;
+	if (view->ep<FIRSTPLAYER) view->ep=view->totalplayers-1;
 	if (view->ep==view->cp) OnClickL();
 }
 
 PlayerNumberIcon::PlayerNumberIcon(Munchkin *v, int x, int y, int pl) : ButtonItem(v,x,y), playerNumber(pl){
 	if ((playerNumber>0)&&(playerNumber<10)){
-		image=view->level[playerNumber-PLAYERS];
+		image=view->level[playerNumber-FIRSTPLAYER];
 	}
 	propH=0.5;
 	propW=0.5;

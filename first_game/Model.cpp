@@ -54,14 +54,14 @@ void Model::GiveTreasure(int n, int pl){
 	}
 }
 void Model::GiveToAll(int nd, int nt){
-	for (int i=PLAYERS; i<d.totalplayers; i++) {
+	for (int i=FIRSTPLAYER; i<d.totalplayers; i++) {
 		GiveDoor(nd,i);
 		GiveTreasure(nt,i);
 	}
 }
 
 void Model::StartGame(int n){
-	d.totalplayers=n+PLAYERS;
+	d.totalplayers=n+FIRSTPLAYER;
 	d.plr.resize(d.totalplayers);
 	phaseAdjust.resize(d.totalplayers);
 	phaseAdjust.assign(d.totalplayers, 0);
@@ -78,7 +78,7 @@ void Model::StartGame(int n){
 	random_shuffle(d.treasures.begin(),d.treasures.end());
 
 	GiveToAll(4,4);
-	d.plrTurn=0;
+	d.plrTurn=FIRSTPLAYER;
 	d.phase=BEGIN;
 }
 

@@ -4,12 +4,13 @@
 #include <vector>
 static const int FOE=0;
 static const int HELP=1;
-static const int PLAYERS=2;
+static const int FIRSTPLAYER=2;
 enum CardType {BEAST};
+enum StackType {DOOR,TREASURE};
 //enum DoorType {EQUIP,USE};
 //enum TreashureType {EQUIP,ONEOFF};
 enum CardGroup {HAND,EQUIP,DESK};
-enum Phase {BEGIN,KICKOPEN,COMBAT,CHARITY,DEATH};
+enum Phase {BEGIN,KICKOPEN,PRECOMBAT,COMBAT,ESCAPE,OPENPICK,CHARITY,DEATH};
 struct CardPosition {
 	CardGroup vectorName;
 	int playerNumber;
@@ -39,6 +40,7 @@ struct ModelData{
 	int plrTurn;
 	Phase phase;
 	std::vector<int> inCombat;
+	int currentInCombat;
 	std::vector<Player> plr;
 	std::vector<int> doors,treasures,rd,rt;
 };

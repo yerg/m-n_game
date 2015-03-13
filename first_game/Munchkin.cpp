@@ -172,7 +172,7 @@ void Munchkin::ReDraw(){
 
 	snapshot=model->GetData(cp);
 	if (snapshot.phase!=phase) {
-		std::cout<<std::endl<<snapshot.phase<<"  "<<cp-PLAYERS+1;
+		std::cout<<std::endl<<snapshot.phase<<"  "<<cp-FIRSTPLAYER+1;
 		phaseClicked=false;
 	}
 	phase=snapshot.phase;
@@ -192,10 +192,10 @@ void Munchkin::Start()
 	Int3 a(0,0,0);
 	std::fill(counter.begin(),counter.end(),a);
 	selected=false;
-	if (cp==PLAYERS) {
-		ep=PLAYERS+1;
+	if (cp==FIRSTPLAYER) {
+		ep=FIRSTPLAYER+1;
 	} else {
-		ep=PLAYERS;
+		ep=FIRSTPLAYER;
 	}
 	phaseClicked=false;
 	ReDraw();
