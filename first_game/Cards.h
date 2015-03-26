@@ -8,10 +8,10 @@ class Card{
 protected:
 	ModelData* d;
 	CardType cType;
-	StackType sType;
 	const std::map<int, Card*>* const map;
 	Card (ModelData* d, const std::map<int, Card*>* const map): d(d), map(map){}
 	friend class Cards;
+	friend class Model;
 };
 
 struct StrategyPreparation {
@@ -34,13 +34,11 @@ struct StrategyCombat {
 };
 
 struct StrategyWin {
-	virtual void Handle(ModelData*d, int gainCard, int gainLevel){
-
-	}
+	virtual void Handle(ModelData*d, int gainCard, int gainLevel);
 };
 
 struct StrategyDefeat {
-	virtual void Handle(ModelData*d);
+	virtual void Handle(ModelData*d)=0;
 };
 
 class Beast : public Card{
@@ -66,11 +64,77 @@ public:
 	void SetWin(StrategyWin* swSet);
 };
 
-class 
+
+
+class LevelUp : public Card {
+public:
+	LevelUp (ModelData* d, const std::map<int, Card*>* const map);
+};
+
+class Item : public Card {
+	int gold;
+public:
+	Item (ModelData* d, const std::map<int, Card*>* const map) : Card(d,map) {cType|TREASURE;}
+};
+
+class Cleric : public Card {
+public:
+	Cleric (ModelData* d, const std::map<int, Card*>* const map) : Card(d,map) {cType|DOOR|CLASS;}
+};
+
+class Dwarf : public Card {
+public:
+	Dwarf (ModelData* d, const std::map<int, Card*>* const map) : Card(d,map) {cType|DOOR|RACE;}
+};
+
+class Elf : public Card {
+public:
+	Elf (ModelData* d, const std::map<int, Card*>* const map) : Card(d,map) {cType|DOOR|RACE;}
+};
+
+class Halfling : public Card {
+public:
+	Halfling (ModelData* d, const std::map<int, Card*>* const map) : Card(d,map) {cType|DOOR|RACE;}
+};
+
+class Thief : public Card{
+public:
+	Thief (ModelData* d, const std::map<int, Card*>* const map) : Card(d,map) {cType|DOOR|CLASS;}
+};
+
+class Warrior : public Card {
+public:
+	Warrior (ModelData* d, const std::map<int, Card*>* const map) : Card(d,map) {cType|DOOR|CLASS;}
+};
+
+class Wizard : public Card{
+public:
+	Wizard (ModelData* d, const std::map<int, Card*>* const map) : Card(d,map) {cType|DOOR|CLASS;}
+};
+
+class Curse : public Card{
+public:
+	Curse (ModelData* d, const std::map<int, Card*>* const map) : Card(d,map) {cType|DOOR|CURSE;}
+};
+
+class InstantUse : public Card {
+	virtual void Use()=0;
+public:
+	InstantUse (ModelData* d, const std::map<int, Card*>* const map) : Card(d,map) {cType|INSTANTUSE;}
+};
+
+class DivineIntervention : public InstantUse {
+	virtual void Use();
+public:
+	DivineIntervention (ModelData* d, const std::map<int, Card*>* const map) : InstantUse(d,map) {cType|DOOR;}
+};
+
+
 
 class Cards{
-	std::map<int, Card*> c;
-	Cards(ModelData* d);
+	Cards();
+	static std::map<int, Card*> c;
+	static std::map<int, Card*>* GetMap(ModelData* d);
 	friend class Model;
 };
 

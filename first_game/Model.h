@@ -10,8 +10,6 @@ class Model {
 	std::map<int, Card* > *map;
 	ModelData d;
 	std::vector <int> phaseAdjust;
-	void GiveDoor(int n, int pl);
-	void GiveTreasure(int n, int pl);
 	void GiveToAll(int nd, int nt);
 	void StartGame(int n);
 	void DoCombat();
@@ -24,6 +22,9 @@ class Model {
 
 	friend class ModelHandler;
 };
+
+void GiveDoor(ModelData& d, int n, int pl);
+void GiveTreasure(ModelData& d, int n, int pl);
 
 class ModelHandler{
 	std::unique_ptr<Model> model;

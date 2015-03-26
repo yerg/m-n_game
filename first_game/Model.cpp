@@ -28,9 +28,9 @@ void ModelHandler::Lock() const{
 	}
 }
 
-void Model::GiveDoor(int n, int pl){
+void GiveDoor(ModelData& d, int n, int pl){
 	while (n){
-		d.plr[pl].deck[0].push_back(d.doors.back());
+		d.plr[pl].deck[HAND].push_back(d.doors.back());
 		d.doors.pop_back();
 		--n;
 		if (d.doors.size()==1) {
@@ -41,9 +41,9 @@ void Model::GiveDoor(int n, int pl){
 	}
 }
 
-void Model::GiveTreasure(int n, int pl){
+void GiveTreasure(ModelData& d, int n, int pl){
 	while (n){
-		d.plr[pl].deck[0].push_back(d.treasures.back());
+		d.plr[pl].deck[HAND].push_back(d.treasures.back());
 		d.treasures.pop_back();
 		--n;
 		if (d.treasures.size()==1) {
@@ -55,12 +55,13 @@ void Model::GiveTreasure(int n, int pl){
 }
 void Model::GiveToAll(int nd, int nt){
 	for (int i=FIRSTPLAYER; i<d.totalplayers; i++) {
-		GiveDoor(nd,i);
-		GiveTreasure(nt,i);
+		GiveDoor(d, nd,i);
+		GiveTreasure(d, nt,i);
 	}
 }
 
 void Model::StartGame(int n){
+	map=Cards::GetMap(&d);
 	d.totalplayers=n+FIRSTPLAYER;
 	d.plr.resize(d.totalplayers);
 	phaseAdjust.resize(d.totalplayers);
@@ -136,9 +137,19 @@ void Model::EndPhase(Phase phaseToClose, int cp){
 		switch (d.phase) {
 		case BEGIN : 
 			if (cp==d.plrTurn) {
-				
-				//TODO:place card at table, if it is monster, then go fight
-				d.phase=KICKOPEN;
+				d.plr[FOE].deck[EQUIP].push_back(d.doors.back());
+				d.doors.pop_back();
+				if (d.doors.size()==1) {
+					d.doors.insert(d.doors.end(),d.rd.begin(),d.rd.end());
+					std::random_shuffle(d.doors.begin(),d.doors.end());
+					d.rd.clear();
+				}
+				//Card
+				if (((*map).at(*d.plr[FOE].deck[EQUIP].begin()))->cType & BEAST) {
+					d.phase=COMBAT;
+				} else {
+					d.phase=KICKOPEN;
+				}
 			}
 			break;
 		case KICKOPEN :

@@ -5,12 +5,27 @@
 static const int FOE=0;
 static const int HELP=1;
 static const int FIRSTPLAYER=2;
-enum CardType {BEAST};
-enum StackType {DOOR,TREASURE};
-//enum DoorType {EQUIP,USE};
-//enum TreashureType {EQUIP,ONEOFF};
+
+enum CardType {
+	DOOR=0,
+	TREASURE=1,
+	BEAST=1<<1,
+	CURSE=1<<2,
+	CLASS=1<<3,
+	RACE=1<<4,
+	MULTICLASS=1<<5,
+	MULTIRACE=1<<6,
+	INSTANTUSE=1<<7,
+	BATTLEUSE=1<<8,
+	PLAYERUSE=1<<9,
+	EQUIPPABLE=1<<10,
+	WEARABBlE=1<<11,
+
+
+};
+inline CardType operator|(CardType a, CardType b) {return static_cast<CardType>(static_cast<int>(a) | static_cast<int>(b));}
 enum CardGroup {HAND,EQUIP,DESK};
-enum Phase {BEGIN,KICKOPEN,PRECOMBAT,COMBAT,ESCAPE,OPENPICK,CHARITY,DEATH};
+enum Phase {GAMESTART,BEGIN,KICKOPEN,PRECOMBAT,COMBAT,ESCAPE,POSTESCAPE,OPENPICK,CHARITY,DEATH};
 struct CardPosition {
 	CardGroup vectorName;
 	int playerNumber;
@@ -35,10 +50,17 @@ struct Snapshot{
 	int plrTurn;
 };
 
+class GameEvent {
+public :
+	virtual void TryMove(CardPosition from, CardPosition to, int cp)=0;
+};
+
 struct ModelData{
 	int totalplayers;
 	int plrTurn;
 	Phase phase;
+	int dice;
+	GameEvent *event;
 	std::vector<int> inCombat;
 	int currentInCombat;
 	std::vector<Player> plr;
