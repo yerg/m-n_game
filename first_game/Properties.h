@@ -9,21 +9,63 @@ static const int FIRSTPLAYER=2;
 enum CardType {
 	DOOR=0,
 	TREASURE=1,
-	BEAST=1<<1,
-	CURSE=1<<2,
-	CLASS=1<<3,
-	RACE=1<<4,
-	MULTICLASS=1<<5,
-	MULTIRACE=1<<6,
-	INSTANTUSE=1<<7,
-	BATTLEUSE=1<<8,
-	PLAYERUSE=1<<9,
-	EQUIPPABLE=1<<10,
-	WEARABBlE=1<<11,
+	INSTANTUSE=1<<2,
+	BATTLEUSE=1<<3,
+	PLAYERUSE=1<<4,
+	EQUIPPABLE=1<<5,
 
+	STRATEGYESCAPE=1<<6,
+	STRATEGYWIN=1<<7,
+	STRATEGYPREPARATION=1<<8,
+	STRATEGYCOMBAT=1<<9,
 
+	BEAST=1<<11|DOOR,
+	CURSE=1<<12|DOOR|PLAYERUSE,
+	CLASS=1<<13|DOOR,
+	RACE=1<<14|DOOR,
+	MULTICLASS=1<<15|DOOR,
+	MULTIRACE=1<<16|DOOR,
 };
+
+enum Forbid {
+	FORBIDLESS=0,
+	MALE=1,
+	FEMALE=1<<1,
+	HUMAN=1<<2,
+	DWARF=1<<3,
+	ELF=1<<4,
+	HALFLING=1<<5,
+	NOTHUMAN=DWARF|ELF|HALFLING,
+	NOTDWARF=HUMAN|ELF|HALFLING,
+	NOTELF=HUMAN|DWARF|HALFLING,
+	NOTHALFLING=HUMAN|DWARF|ELF,
+	CLASSLESS=1<<6,
+	WARRIOR=1<<7,
+	CLERIC=1<<8,
+	WIZARD=1<<9,
+	THIEF=1<<10,
+	ANYCLASS=WARRIOR|CLERIC|WIZARD|THIEF,
+	NOTWARRIOR=CLASSLESS|CLERIC|WIZARD|THIEF,
+	NOTCLERIC=CLASSLESS|CLERIC|WIZARD|THIEF,
+	NOTWIZARD=CLASSLESS|WARRIOR|CLERIC|THIEF,
+	NOTTHIEF=CLASSLESS|WARRIOR|CLERIC|WIZARD,
+	FORBID=~0
+};
+
+enum Slot {
+	SLOTLESS=0,
+	HAT=1,
+	SHOES=1<<1,
+	ONEHANDED=1<<2,
+	TWOHANDED=1<<3,
+	CHEST=1<<4,
+	BIG=1<<5
+};
+
 inline CardType operator|(CardType a, CardType b) {return static_cast<CardType>(static_cast<int>(a) | static_cast<int>(b));}
+inline Forbid operator|(Forbid a, Forbid b) {return static_cast<Forbid>(static_cast<int>(a) | static_cast<int>(b));}
+inline Slot operator|(Slot a, Slot b) {return static_cast<Slot>(static_cast<int>(a) | static_cast<int>(b));}
+
 enum CardGroup {HAND,EQUIP,DESK};
 enum Phase {GAMESTART,BEGIN,KICKOPEN,PRECOMBAT,COMBAT,ESCAPE,POSTESCAPE,OPENPICK,CHARITY,DEATH};
 struct CardPosition {

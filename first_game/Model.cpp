@@ -41,6 +41,7 @@ void GiveDoor(ModelData& d, int n, int pl){
 	}
 }
 
+
 void GiveTreasure(ModelData& d, int n, int pl){
 	while (n){
 		d.plr[pl].deck[HAND].push_back(d.treasures.back());
@@ -145,7 +146,7 @@ void Model::EndPhase(Phase phaseToClose, int cp){
 					d.rd.clear();
 				}
 				//Card
-				if (((*map).at(*d.plr[FOE].deck[EQUIP].begin()))->cType & BEAST) {
+				if (( map->at(*d.plr[FOE].deck[EQUIP].begin()) ).cType & BEAST) {
 					d.phase=COMBAT;
 				} else {
 					d.phase=KICKOPEN;

@@ -7,7 +7,7 @@
 class Card;
 
 class Model {
-	std::map<int, Card* > *map;
+	std::map<int, Card> *map;
 	ModelData d;
 	std::vector <int> phaseAdjust;
 	void GiveToAll(int nd, int nt);
