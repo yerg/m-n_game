@@ -13,23 +13,25 @@ struct D2lvl : public StrategyDefeat{
 };
 
 struct ALevelUp : StrategyAct {
-	void Handle(ModelData*d, int pl){
+	void Handle(ModelData*d, std::map<int, Card>* const map, int pl){
 		if (d->plr[pl].level<9) ++d->plr[pl].level;
 	}
 };
 
 struct AChangeClass : StrategyAct {
-	void Handle(ModelData*d, int pl){
-		std::vector<int>::iterator vi=std::find_if(d->plr[pl].deck[EQUIP].begin(),d->plr[pl].deck[EQUIP].end(),[](const Card &c){return (CLASS|MULTICLASS)&c.CardType();});
+	void Handle(ModelData*d, std::map<int, Card>* const map, int pl){
+		std::vector<int>::iterator vi=std::find_if(d->plr[pl].deck[EQUIP].begin(),d->plr[pl].deck[EQUIP].end(), [map](const int &c){return (CLASS|MULTICLASS)&(*map)[c].CardType();} );
 		int startPos;
+
 		if (vi!=d->plr[pl].deck[EQUIP].end()) {
 			startPos=d->rd.size();
 			do {
 				d->rd.push_back(*vi);
 				d->plr[pl].deck[EQUIP].erase(vi);
-				vi=std::find_if(d->plr[pl].deck[EQUIP].begin(),d->plr[pl].deck[EQUIP].end(),[](const Card &c){return (CLASS|MULTICLASS)&c.CardType();} );
+				vi=std::find_if(d->plr[pl].deck[EQUIP].begin(),d->plr[pl].deck[EQUIP].end(),[map](const int &c){return (CLASS|MULTICLASS)&(*map)[c].CardType();} );
 			} while (vi!=d->plr[pl].deck[EQUIP].end());
-			std::vector<int>::reverse_iterator rvi=std::find_if(d->rd.rbegin()+startPos,d->rd.rend(),[](const Card &c){return (CLASS)&c.CardType();} );
+
+			std::vector<int>::reverse_iterator rvi=std::find_if(d->rd.rbegin()+startPos,d->rd.rend(),[map](const int &c){return CLASS&(*map)[c].CardType();});
 			if (rvi!=d->rd.rend()){
 				d->plr[pl].deck[EQUIP].push_back(*rvi);
 				d->rd.erase(rvi.base()-1);
@@ -39,17 +41,19 @@ struct AChangeClass : StrategyAct {
 };
 
 struct AChangeRace : StrategyAct {
-	void Handle(ModelData*d, int pl){
-		std::vector<int>::iterator vi=std::find_if(d->plr[pl].deck[EQUIP].begin(),d->plr[pl].deck[EQUIP].end(),[](const Card &c){return (RACE|MULTIRACE)&c.CardType();});
+	void Handle(ModelData*d, std::map<int, Card>* const map, int pl){
+		std::vector<int>::iterator vi=std::find_if(d->plr[pl].deck[EQUIP].begin(),d->plr[pl].deck[EQUIP].end(),[map](const int &c){return (RACE|MULTIRACE)&(*map)[c].CardType();} );
 		int startPos;
+
 		if (vi!=d->plr[pl].deck[EQUIP].end()) {
 			startPos=d->rd.size();
 			do {
 				d->rd.push_back(*vi);
 				d->plr[pl].deck[EQUIP].erase(vi);
-				vi=std::find_if(d->plr[pl].deck[EQUIP].begin(),d->plr[pl].deck[EQUIP].end(),[](const Card &c){return (RACE|MULTIRACE)&c.CardType();} );
+				vi=std::find_if(d->plr[pl].deck[EQUIP].begin(),d->plr[pl].deck[EQUIP].end(),[map](const int &c){return (RACE|MULTIRACE)&(*map)[c].CardType();} );
 			} while (vi!=d->plr[pl].deck[EQUIP].end());
-			std::vector<int>::reverse_iterator rvi=std::find_if(d->rd.rbegin()+startPos,d->rd.rend(),[](const Card &c){return (RACE)&c.CardType();} );
+
+			std::vector<int>::reverse_iterator rvi=std::find_if(d->rd.rbegin()+startPos,d->rd.rend(),[map](const int &c){return RACE&(*map)[c].CardType();} );
 			if (rvi!=d->rd.rend()){
 				d->plr[pl].deck[EQUIP].push_back(*rvi);
 				d->rd.erase(rvi.base()-1);

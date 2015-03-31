@@ -24,18 +24,18 @@ public:
 };
 
 struct StrategyAct {
-	virtual void Handle(ModelData*d, int pl)=0;
+	virtual void Handle(ModelData*d, std::map<int, Card>* const map, int pl)=0;
 };
 
 struct StrategyEscape {
-	virtual bool Handle(ModelData*d, const std::map<int, Card>* const map){
+	virtual bool Handle(ModelData*d, std::map<int, Card>* const map){
 		int i=rand()%6;
 		return i>3;
 	}
 };
 
 struct StrategyCombat {
-	virtual int Handle(ModelData*d, const std::map<int, Card>* const map){
+	virtual int Handle(ModelData*d, std::map<int, Card>* const map){
 		return true;
 	}
 };
