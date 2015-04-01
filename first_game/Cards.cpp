@@ -1,10 +1,23 @@
 #include "Cards.H"
+
+Card& Card::operator=(const Card& rhs) {
+	d=rhs.d;
+	cType=rhs.cType;
+	map=rhs.map;
+	sa=rhs.sa;
+	sc=rhs.sc;
+	se=rhs.se;
+	sw=rhs.sw;
+	beast=rhs.beast;
+	item=rhs.item;
+	return *this;
+}
+
 struct D3872 : public StrategyDefeat{
 	void Handle(ModelData*d){
 
 	}
 };
-
 struct D2lvl : public StrategyDefeat{
 	void Handle(ModelData*d){
 		d->plr[d->currentInCombat].level-=2;
@@ -17,7 +30,16 @@ struct ALevelUp : StrategyAct {
 		if (d->plr[pl].level<9) ++d->plr[pl].level;
 	}
 };
-
+struct ALevelDown : StrategyAct {
+	void Handle(ModelData*d, std::map<int, Card>* const map, int pl){
+		if (d->plr[pl].level>1) --d->plr[pl].level;
+	}
+};
+struct ATwoLevelDown : StrategyAct {
+	void Handle(ModelData*d, std::map<int, Card>* const map, int pl){
+		if (d->plr[pl].level>3) d->plr[pl].level-=2; else d->plr[pl].level=1;
+	}
+};
 struct AChangeClass : StrategyAct {
 	void Handle(ModelData*d, std::map<int, Card>* const map, int pl){
 		std::vector<int>::iterator vi=std::find_if(d->plr[pl].deck[EQUIP].begin(),d->plr[pl].deck[EQUIP].end(), [map](const int &c){return (CLASS|MULTICLASS)&(*map)[c].CardType();} );
@@ -39,10 +61,10 @@ struct AChangeClass : StrategyAct {
 		}
 	}
 };
-
 struct AChangeRace : StrategyAct {
 	void Handle(ModelData*d, std::map<int, Card>* const map, int pl){
-		std::vector<int>::iterator vi=std::find_if(d->plr[pl].deck[EQUIP].begin(),d->plr[pl].deck[EQUIP].end(),[map](const int &c){return (RACE|MULTIRACE)&(*map)[c].CardType();} );
+		std::vector<int>::iterator vi=std::find_if(
+			d->plr[pl].deck[EQUIP].begin(),d->plr[pl].deck[EQUIP].end(),[map](const int &c){return (RACE|MULTIRACE)&(*map)[c].CardType();} );
 		int startPos;
 
 		if (vi!=d->plr[pl].deck[EQUIP].end()) {
@@ -61,14 +83,17 @@ struct AChangeRace : StrategyAct {
 		}
 	}
 };
+struct AChangeSex : StrategyAct {
+	void Handle(ModelData*d, std::map<int, Card>* const map, int pl){
+		d->plr[pl].gender=!d->plr[pl].gender;
+	}
+};
 
-namespace{
-	D3872 d3872;
-	D2lvl  d2lvl;
-	ALevelUp aLevelUp;
-	AChangeClass aChangeClass;
-	AChangeRace aChangeRace;
-}
+struct CChangeSex : StrategyCombat {
+	int Handle(ModelData*d, std::map<int, Card>* const map){
+
+	}
+};
 
 void StrategyWin::Handle(ModelData*d, int gainCard, int gainLevel){
 	if (d->inCombat.size()==1) {
@@ -77,6 +102,15 @@ void StrategyWin::Handle(ModelData*d, int gainCard, int gainLevel){
 	}
 }
 
+namespace{
+	D3872 d3872;
+	D2lvl  d2lvl;
+	ALevelUp aLevelUp;
+	ALevelDown aLevelDown;
+	ATwoLevelDown aTwoLevelDown;
+	AChangeClass aChangeClass;
+	AChangeRace aChangeRace;
+}
 
 std::map<int, Card> Cards::c;
 std::map<int, Card>* Cards::GetMap(ModelData* d){
@@ -110,11 +144,11 @@ std::map<int, Card>* Cards::GetMap(ModelData* d){
 	c[22]=aChangeRace; c[22]=CURSE;
 	c[23]=CURSE;
 	c[24]=CURSE;
-	c[25]=CURSE;
+	c[25]=aTwoLevelDown; c[25]=CURSE;
 	c[26]=CURSE;
 	c[27]=CURSE;
-	c[28]=CURSE;
-	c[29]=CURSE;
+	c[28]=aLevelDown; c[28]=CURSE;
+	c[29]=aLevelDown; c[29]=CURSE;
 	c[30]=CURSE;
 	c[31]=CURSE;
 	c[32]=CURSE;

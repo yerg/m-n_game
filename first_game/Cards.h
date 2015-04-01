@@ -26,20 +26,17 @@ public:
 struct StrategyAct {
 	virtual void Handle(ModelData*d, std::map<int, Card>* const map, int pl)=0;
 };
-
 struct StrategyEscape {
 	virtual bool Handle(ModelData*d, std::map<int, Card>* const map){
 		int i=rand()%6;
 		return i>3;
 	}
 };
-
 struct StrategyCombat {
 	virtual int Handle(ModelData*d, std::map<int, Card>* const map){
 		return true;
 	}
 };
-
 struct StrategyWin {
 	virtual void Handle(ModelData*d, int gainCard, int gainLevel);
 };
@@ -54,7 +51,6 @@ public:
 	Forbid Forbid()const{return forbid;}
 	Slot Slot()const{return slot;}
 };
-
 
 class Card{ 
 	typedef std::shared_ptr<Beast> SPBeast;
@@ -78,18 +74,7 @@ protected:
 
 public:
 	Card(){}
-	Card& operator=(const Card& rhs) {
-		d=rhs.d;
-		cType=rhs.cType;
-		map=rhs.map;
-		sa=rhs.sa;
-		sc=rhs.sc;
-		se=rhs.se;
-		sw=rhs.sw;
-		beast=rhs.beast;
-		item=rhs.item;
-		return *this;
-	}
+	Card& operator=(const Card& rhs);
 	
 	Card& operator=(Beast* rhs) {beast=SPBeast(rhs); cType|BEAST; return *this;}
 	Card& operator=(StrategyCombat &rhs) {sc=&rhs; cType|STRATEGYCOMBAT; return *this;}
