@@ -3,7 +3,6 @@
 ModelHandler::ModelHandler(int n) : semaphore(false){
 	model = std::unique_ptr<Model>(new Model(n));
 }
-
 Snapshot ModelHandler::GetData(const int &cp) const{
 	Lock();
 	Snapshot tmp=model->GetData(cp);
@@ -20,7 +19,6 @@ void ModelHandler::EndPhase(const Phase &phaseToClose, const int &cp){
 	model->EndPhase(phaseToClose, cp);
 	--semaphore;
 }
-
 void ModelHandler::Lock() const{
 	while(++semaphore>1){
 		--semaphore;
@@ -40,8 +38,6 @@ void GiveDoor(ModelData& d, int n, int pl){
 		}
 	}
 }
-
-
 void GiveTreasure(ModelData& d, int n, int pl){
 	while (n){
 		d.plr[pl].deck[HAND].push_back(d.treasures.back());
@@ -54,13 +50,53 @@ void GiveTreasure(ModelData& d, int n, int pl){
 		}
 	}
 }
+Setting CheckSetting(ModelData& d, std::map<int, Card>* map, int pl) {
+	Setting stg=FREESETTING;
+	CardType tmp=CardType(0); int classes=0, races=0;
+	d.plr[pl].gender ? stg|MALE : stg|FEMALE;
+	std::for_each(
+		d.plr[pl].deck[EQUIP].begin(),
+		d.plr[pl].deck[EQUIP].end(),
+		[map, &tmp, &classes, &races](const int &c){
+			tmp=tmp|(*map)[c].CardType(); 
+			if ((*map)[c].CardType()&CLASS) ++classes;
+			if ((*map)[c].CardType()&RACE) ++races;
+	});
+
+	if ( (classes>2) || ((classes==2) && (!(tmp&MULTICLASS))) || ((classes<1)&&(tmp&MULTICLASS)) ) throw "Bad classes math";
+	if ( (races>2) || ((races==2)&&(!(tmp&MULTIRACE))) || ((races<1)&&(tmp&MULTIRACE)) ) throw "Bad races math";
+
+	if (classes==1 && tmp&MULTICLASS) {
+		if (tmp&DWARFCARD) stg=stg|SUPERDWARF;
+		if (tmp&ELFCARD) stg=stg|SUPERELF;
+		if (tmp&HALFLINGCARD) stg=stg|SUPERHALFLING;
+	} else {
+		if (tmp&DWARFCARD) stg=stg|DWARF;
+		if (tmp&ELFCARD) stg=stg|ELF;
+		if (tmp&HALFLINGCARD) stg=stg|HALFLING;
+	}
+
+	if (classes==1 && tmp&MULTICLASS) {
+		if (tmp&WARRIORCARD) stg=stg|SUPERWARRIOR;
+		if (tmp&CLERICCARD) stg=stg|SUPERCLERIC;
+		if (tmp&WIZARDCARD) stg=stg|SUPERWIZARD;
+		if (tmp&THIEFCARD) stg=stg|SUPERTHIEF;
+	} else {
+		if (tmp&WARRIORCARD) stg=stg|WARRIOR;
+		if (tmp&CLERICCARD) stg=stg|CLERIC;
+		if (tmp&WIZARDCARD) stg=stg|WIZARD;
+		if (tmp&THIEFCARD) stg=stg|SUPERTHIEF;
+	}
+
+	return stg;
+}
+
 void Model::GiveToAll(int nd, int nt){
 	for (int i=FIRSTPLAYER; i<d.totalplayers; i++) {
 		GiveDoor(d, nd,i);
 		GiveTreasure(d, nt,i);
 	}
 }
-
 void Model::StartGame(int n){
 	map=Cards::GetMap(&d);
 	d.totalplayers=n+FIRSTPLAYER;
@@ -83,7 +119,6 @@ void Model::StartGame(int n){
 	d.plrTurn=FIRSTPLAYER;
 	d.phase=BEGIN;
 }
-
 Snapshot Model::GetData(int cp) const{
 	Snapshot tmp;
 	Player pl;

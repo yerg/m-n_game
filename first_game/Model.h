@@ -25,6 +25,7 @@ class Model {
 
 void GiveDoor(ModelData& d, int n, int pl);
 void GiveTreasure(ModelData& d, int n, int pl);
+Setting CheckSetting(ModelData& d, std::map<int, Card>* map, int pl);
 
 class ModelHandler{
 	std::unique_ptr<Model> model;
