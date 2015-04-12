@@ -8,12 +8,12 @@ Card& Card::operator=(const Card& rhs) {
 	sc=rhs.sc;
 	se=rhs.se;
 	sw=rhs.sw;
+	ss=rhs.ss;
 	beast=rhs.beast;
 	item=rhs.item;
 	return *this;
 }
 int Card::Combat() {
-	
 	int i=0;
 	return i;
 }
@@ -133,6 +133,12 @@ std::map<int, Card>* Cards::GetMap(ModelData* d){
 	Card card(d, &c);
 	for (int i=0; i<170; i++){
 		c.insert(std::pair<int,Card>(i,card));
+	}
+	for (int i=0; i<95; i++){
+		c[i]=DOOR;
+	}
+	for (int i=95; i<170; i++){
+		c[i]=TREASURE;
 	}
 
 	c[0]=CLERICCARD;

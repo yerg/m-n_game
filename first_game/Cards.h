@@ -45,6 +45,10 @@ struct StrategyWin {
 	virtual void Handle(ModelData*d, int gainCard, int gainLevel);
 };
 
+struct StrategySwap {
+	virtual void Handle(ModelData*d, std::map<int, Card>* const map, CardPosition from, CardPosition to);
+};
+
 class Item {
 	int gold, combat;
 	Setting forbid;
@@ -64,6 +68,8 @@ class Card{
 	typedef std::shared_ptr<StrategyCombat> SPCombat;
 	typedef std::shared_ptr<StrategyEscape> SPEscape;
 	typedef std::shared_ptr<StrategyWin> SPWin;
+	typedef std::shared_ptr<StrategySwap> SSwap;
+
 protected:
 	ModelData* d;
 	CardType cType;
@@ -73,10 +79,11 @@ protected:
 	SPCombat sc;
 	SPEscape se;
 	SPWin sw;
+	SSwap ss;
 	SPBeast beast;
 	SPItem item;
 
-	Card (ModelData* d, std::map<int, Card>* map): d(d), map(map){}
+	Card (ModelData* d, std::map<int, Card>* map): d(d), map(map), cType(FREETYPE){}
 
 	friend class Cards;
 	friend class Model;
@@ -85,13 +92,14 @@ public:
 	Card(){}
 	Card& operator=(const Card& rhs);
 	
-	Card& operator=(Beast* rhs) {beast=SPBeast(rhs); cType|BEAST; return *this;}
-	Card& operator=(StrategyCombat *rhs) {sc=SPCombat(rhs); cType|STRATEGYCOMBAT; return *this;}
-	Card& operator=(StrategyEscape *rhs) {se=SPEscape(rhs); cType|STRATEGYESCAPE; return *this;}
-	Card& operator=(StrategyAct *rhs) {sa=SPAct(rhs); cType|STRATEGYPREPARATION; return *this;}
-	Card& operator=(StrategyWin *rhs) {sw=SPWin(rhs); cType|STRATEGYWIN; return *this;}
-	Card& operator=(Item* rhs) {item=SPItem(rhs); cType|EQUIPPABLE|TREASURE; return *this;}
-	Card& operator=(const CardType &rhs) {cType=rhs; return * this;}
+	Card& operator=(Beast* rhs) {beast=SPBeast(rhs); cType=cType|BEAST; return *this;}
+	Card& operator=(StrategyCombat *rhs) {sc=SPCombat(rhs); cType=cType|STRATEGYCOMBAT; return *this;}
+	Card& operator=(StrategyEscape *rhs) {se=SPEscape(rhs); cType=cType|STRATEGYESCAPE; return *this;}
+	Card& operator=(StrategyAct *rhs) {sa=SPAct(rhs); cType=cType|STRATEGYPREPARATION; return *this;}
+	Card& operator=(StrategyWin *rhs) {sw=SPWin(rhs); cType=cType|STRATEGYWIN; return *this;}
+	Card& operator=(StrategySwap *rhs) {ss=SSwap(rhs); cType=cType|STRATEGYSWAP; return *this;}
+	Card& operator=(Item* rhs) {item=SPItem(rhs); cType=cType|ITEM; return *this;}
+	Card& operator=(const CardType &rhs) {cType=cType|rhs; return * this;}
 
 	CardType CardType() const {return cType;}
 
@@ -104,6 +112,9 @@ public:
 	int GainCard()const{if(beast) return beast->GainCard(); else throw "Beast GainCard bad access";}
 	int GainLevel()const{if(beast) return beast->GainLevel(); else throw "Beast GainLevel bad access";}
 	int Level()const{if(beast) return beast->Level(); else throw "Beast Level bad access";}
+	void Swap(CardPosition from, CardPosition to)const{if(ss) return ss->Handle(d,map,from,to); else throw "StrategySwap bad access";}
+
+	void Act(const int &pl)const{if(sa) return sa->Handle(d,map,pl); else throw "StrategyAct bad access";}
 
 	int Combat();
 //	void Preparation() {sa->Handle(d);}

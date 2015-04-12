@@ -64,8 +64,8 @@ UpPlayer::UpPlayer(Munchkin *v, int x, int y) : ButtonItem(v,x,y) {
 
 void UpPlayer::OnClickL(){
 	++view->ep;
-	if (view->ep>=view->totalplayers) view->ep=FIRSTPLAYER;
-	if (view->ep==view->cp) OnClickL();
+	if (view->ep >= view->totalplayers) view->ep=FIRSTPLAYER;
+	if (view->ep == view->cp) OnClickL();
 }
 
 DownPlayer::DownPlayer(Munchkin *v, int x, int y) : ButtonItem(v,x,y) {

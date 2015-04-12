@@ -6,38 +6,41 @@ static const int FOE=0;
 static const int HELP=1;
 static const int FIRSTPLAYER=2;
 
-enum CardType {
-	DOOR=0,
-	TREASURE=1,
+enum CardType : unsigned long long {
+	FREETYPE=0,
+	DOOR=1,
+	TREASURE=1<<1,
 	INSTANTUSE=1<<2,
 	BATTLEUSE=1<<3,
 	PLAYERUSE=1<<4,
 	EQUIPPABLE=1<<5,
+	ITEM=1<<6,
 
-	STRATEGYESCAPE=1<<6,
-	STRATEGYWIN=1<<7,
-	STRATEGYPREPARATION=1<<8,
-	STRATEGYCOMBAT=1<<9,
+	STRATEGYESCAPE=1<<7,
+	STRATEGYWIN=1<<8,
+	STRATEGYPREPARATION=1<<9,
+	STRATEGYCOMBAT=1<<10,
+	STRATEGYSWAP=1<<17,
 
-	DELETEAFTERCOMBAT=1<<10,
+	DELETEAFTERCOMBAT=1<<18,
 
-	BEAST=1<<11|DOOR,
-	CURSE=1<<12|DOOR|PLAYERUSE,
+	BEAST=1<<19,
+	CURSE=1<<20,
 
-	MULTIRACE=1<<13|DOOR,
-	MULTICLASS=1<<14|DOOR,
+	MULTIRACE=1<<21,
+	MULTICLASS=1<<22,
 
-	DWARFCARD=1<<15|DOOR,
-	ELFCARD=1<<16|DOOR,
-	HALFLINGCARD=1<<17|DOOR,
-	//reserved =1<<18|DOOR,
-	CLASS=DWARFCARD|ELFCARD|HALFLINGCARD,
+	DWARFCARD=1<<23,
+	ELFCARD=1<<24,
+	HALFLINGCARD=1<<25,
+	//reserved =1<<26,
+	RACE=DWARFCARD|ELFCARD|HALFLINGCARD,
 
-	WARRIORCARD=1<<19|DOOR,
-	CLERICCARD=1<<20|DOOR,
-	WIZARDCARD=1<<21|DOOR,
-	THIEFCARD=1<<22|DOOR,
-	RACE=WARRIORCARD|CLERICCARD|WIZARDCARD|THIEFCARD,
+	WARRIORCARD=1<<27,
+	CLERICCARD=1<<28,
+	WIZARDCARD=1<<29,
+	THIEFCARD=1<<30,
+	CLASS=WARRIORCARD|CLERICCARD|WIZARDCARD|THIEFCARD,
 };
 
 
@@ -91,9 +94,10 @@ enum Slot {
 inline CardType operator|(CardType a, CardType b) {return static_cast<CardType>(static_cast<int>(a) | static_cast<int>(b));}
 inline Setting operator|(Setting a, Setting b) {return static_cast<Setting>(static_cast<int>(a) | static_cast<int>(b));}
 inline Slot operator|(Slot a, Slot b) {return static_cast<Slot>(static_cast<int>(a) | static_cast<int>(b));}
+inline Slot operator&(Slot a, Slot b) {return static_cast<Slot>(static_cast<int>(a) & static_cast<int>(b));}
 
 enum CardGroup {HAND,EQUIP,DESK};
-enum Phase {GAMESTART,BEGIN,KICKOPEN,PRECOMBAT,COMBAT,ESCAPE,POSTESCAPE,OPENPICK,CHARITY,DEATH};
+enum Phase {GAMESTART,BEGIN,KICKOPEN,COMBAT,ESCAPE,POSTESCAPE,OPENPICK,CHARITY};
 struct CardPosition {
 	CardGroup vectorName;
 	int playerNumber;
@@ -132,7 +136,7 @@ struct ModelData{
 	std::vector<int> inCombat;
 	int currentInCombat;
 	std::vector<Player> plr;
-	std::vector<int> doors,treasures,rd,rt;
+	std::vector<int> doors, treasures, rd, rt;
 };
 
 #endif

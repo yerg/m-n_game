@@ -114,15 +114,13 @@ void Munchkin::Select(CardPosition newSelect){
 	} else {
 
 		if (selected){
-
 			selected=false;
 			model->TryMove(selectedCard, newSelect, cp);
+  		} 
 
-  		} else {
-
+		else {
 			selected=true;
 			selectedCard=newSelect;
-
 		}
 
 	}

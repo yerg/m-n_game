@@ -10,9 +10,26 @@ class Model {
 	std::map<int, Card> *map;
 	ModelData d;
 	std::vector <int> phaseAdjust;
+
+	CardPosition from;
+	CardPosition to;
+	std::vector<int>::iterator itF;
+	std::vector<int>::iterator itT;
+	std::vector<int> *pFrom;
+	std::vector<int> *pTo;
+	CardType fromType;
+
 	void GiveToAll(int nd, int nt);
 	void StartGame(int n);
 	void DoCombat();
+	void Move(const CardPosition &from, const CardPosition &to);
+	void InCombat(int cp);
+
+	bool SettingPerm();
+	bool EquipPerm();
+	bool DeskPerm();
+	bool BeastPerm();
+	bool UndeadPerm();
 
 	Model(int n) {StartGame(n);}
 	Model(const Model&){}
