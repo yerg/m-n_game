@@ -62,9 +62,41 @@ public:
 	virtual void OnClickL(){}
 };
 
-class DiscardButton : public ButtonItem {				//TODO: 
+class EventIcon : public ButtonItem{
 public:
+	EventIcon(Munchkin *v, int x, int y);
+	virtual void OnClickL(){}
+};
+class PlayersTurnIcon : public ButtonItem{
+	Image* image2;
+public:
+	PlayersTurnIcon(Munchkin *v, int x, int y);
+	virtual void OnClickL(){}
+	virtual void Draw();
+};
 
+class FoldButton : public ButtonItem {				
+public:
+	FoldButton(Munchkin *v, int x, int y);
+	virtual void OnClickL();
+};
+
+class SellButton : public ButtonItem {				
+public:
+	SellButton(Munchkin *v, int x, int y);
+	virtual void OnClickL();
+};
+
+class Ability1Button : public ButtonItem {				
+public:
+	Ability1Button(Munchkin *v, int x, int y);
+	virtual void OnClickL();
+};
+
+class Ability2Button : public ButtonItem {				
+public:
+	Ability2Button(Munchkin *v, int x, int y);
+	virtual void OnClickL();
 };
 
 class UpPlayer : public ButtonItem {
@@ -103,13 +135,13 @@ public:
 	virtual void OnClickL();
 };
 
-class UpButton :public BindedToVector{
+class UpButton : public BindedToVector{
 public:
 	UpButton(Munchkin *v, int x, int y, CardGroup vn, int p);
 	virtual void OnClickL();
 };
 
-class DownButton :public BindedToVector{
+class DownButton : public BindedToVector{
 public:
 	DownButton(Munchkin *v, int x, int y, CardGroup vn, int p);
 	virtual void OnClickL();

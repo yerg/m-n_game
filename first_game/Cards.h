@@ -28,10 +28,7 @@ struct StrategyAct {
 	virtual void Handle(ModelData*d, std::map<int, Card>* const map, int pl)=0;
 };
 struct StrategyEscape {
-	virtual bool Handle(ModelData*d, std::map<int, Card>* const map){
-		int i=rand()%6;
-		return i>3;
-	}
+	virtual bool Handle(ModelData*d, std::map<int, Card>* const map)=0;
 };
 struct StrategyCombat {
 	int n;
@@ -44,9 +41,8 @@ struct StrategyCombat {
 struct StrategyWin {
 	virtual void Handle(ModelData*d, int gainCard, int gainLevel);
 };
-
 struct StrategySwap {
-	virtual void Handle(ModelData*d, std::map<int, Card>* const map, CardPosition from, CardPosition to);
+	virtual void Handle(ModelData*d, std::map<int, Card>* const map, CardPosition from, CardPosition to)=0;
 };
 
 class Item {
@@ -116,11 +112,10 @@ public:
 
 	void Act(const int &pl)const{if(sa) return sa->Handle(d,map,pl); else throw "StrategyAct bad access";}
 
-	int Combat();
-//	void Preparation() {sa->Handle(d);}
+
+	int Combat() const;
 //	bool Escape() {return se->Handle(d, map);}
-//	int Combat() {return sc->Handle(d, map);}
-//	void Win() {sw->Handle(d, gainCard,gainLevel);}
+//	void Win() const
 };
 
 

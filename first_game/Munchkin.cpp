@@ -20,26 +20,43 @@ void Munchkin::StartSettings()
 		card_map[i]=graphics->NewImage(filename);
 	}
 	back=graphics->NewImage("res\\back.jpg");
-	imDesk=graphics->NewImage("res\\desk.jpg");
-	imEquip=graphics->NewImage("res\\equip.jpg");
-	imHand=graphics->NewImage("res\\hand.jpg");
-	down=graphics->NewImage("res\\down.jpg");
-	up=graphics->NewImage("res\\up.jpg");
+	imDesk=graphics->NewImage("res\\desk.bmp");
+	imEquip=graphics->NewImage("res\\equip.bmp");
+	imHand=graphics->NewImage("res\\hand.bmp");
+	down=graphics->NewImage("res\\down.bmp");
+	up=graphics->NewImage("res\\up.bmp");
 	toMove=graphics->NewImage("res\\select.jpg",255,255,255);
-	beast=graphics->NewImage("res\\beast.jpg");
-	help=graphics->NewImage("res\\help.jpg");
-	ready=graphics->NewImage("res\\ready.jpg");
-	lockedReady=graphics->NewImage("res\\ready_grey.jpg");
-	male=graphics->NewImage("res\\male.jpg");
-	female=graphics->NewImage("res\\female.jpg");
+	beast=graphics->NewImage("res\\beast.bmp");
+	help=graphics->NewImage("res\\help.bmp");
+	ready=graphics->NewImage("res\\ready.bmp");
+	lockedReady=graphics->NewImage("res\\ready_grey.bmp");
+	male=graphics->NewImage("res\\male.bmp");
+	female=graphics->NewImage("res\\female.bmp");
+	phaseIcon=graphics->NewImage("res\\phase.bmp");
+	eventIcon=graphics->NewImage("res\\event.bmp");
+	fold=graphics->NewImage("res\\fold.bmp");
+	sell=graphics->NewImage("res\\sell.bmp");
+	turn=graphics->NewImage("res\\turn.bmp");
+	ability1=graphics->NewImage("res\\ability1.bmp");
+	ability2=graphics->NewImage("res\\ability2.bmp");
 	for (int i=0; i<8; i++)
 	{
 		char filename[20]; char letter[2]={'1'+i,'\0'};
 		strcpy(filename,"res\\");
 		strcat(filename, letter);
-		strcat(filename, ".jpg");
+		strcat(filename, ".bmp");
 		level[i]=graphics->NewImage(filename);
 	}
+	for (int i=0; i<8; i++)
+	{
+		char filename[20]; char letter[2]={'0'+i,'\0'};
+		strcpy(filename,"res\\phase");
+		strcat(filename, letter);
+		strcat(filename, ".bmp");
+		phaseIcons[i]=graphics->NewImage(filename);
+	}
+
+
 	mapW=card_map[0]->GetWidth();
 	mapH=card_map[0]->GetHeight();
 	cardRatio=static_cast<double>(mapW/5)/static_cast<double>(mapH/2);
@@ -89,6 +106,14 @@ void Munchkin::FillMap(){
 	FillLine(EQUIP, FOE, 3.9);
 	FillLine(EQUIP, HELP, 5.0);
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new ReadyButton      (this, cW*6.1, 0.25*cH)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new EventIcon        (this, cW*6.1, 0.75*cH)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new PhaseIcon        (this, cW*6.1, 1.25*cH)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new PlayersTurnIcon  (this, cW*6.1, 1.75*cH)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new FoldButton       (this, cW*6.1, 2.75*cH)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new SellButton       (this, cW*6.1, 3.25*cH)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new Ability1Button   (this, cW*6.1, 3.75*cH)));
+	mapOfItems.push_back(std::unique_ptr<MapItem> (new Ability2Button   (this, cW*6.1, 4.25*cH)));
+
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new LevelIcon        (this, cW*7.3, 0.25*cH, ep)));
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new GenderButton     (this, cW*7.3, 0.75*cH, ep)));
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new UpPlayer         (this, cW*7.3, 4.25*cH)));

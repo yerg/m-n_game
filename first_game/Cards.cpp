@@ -1,5 +1,11 @@
 #include "Cards.H"
 
+void StrategyWin::Handle(ModelData*d, int gainCard, int gainLevel){
+	if (d->inCombat.size()==1) {
+		d->plr[d->currentInCombat].level+=gainLevel;
+		GiveTreasure(*d, gainCard , d->currentInCombat);
+	}
+}
 Card& Card::operator=(const Card& rhs) {
 	d=rhs.d;
 	cType=rhs.cType;
@@ -13,9 +19,17 @@ Card& Card::operator=(const Card& rhs) {
 	item=rhs.item;
 	return *this;
 }
-int Card::Combat() {
-	int i=0;
-	return i;
+int Card::Combat() const {
+	if ((beast)||(item)||(sc)) {
+		int i=0;
+		if (beast) i+=beast->Level();
+		if (item) i+=item->Combat();
+		if (sc) i+=sc->Handle(d,map);
+		return i;
+	} else {
+		throw "Combat calculation bad access";
+	}
+
 }
 
 struct D3872 : public StrategyDefeat{
@@ -121,12 +135,6 @@ struct CHornyHelmet : StrategyCombat {
 	}
 };
 
-void StrategyWin::Handle(ModelData*d, int gainCard, int gainLevel){
-	if (d->inCombat.size()==1) {
-		d->plr[d->currentInCombat].level+=gainLevel;
-		GiveTreasure(*d, gainCard , d->currentInCombat);
-	}
-}
 
 std::map<int, Card> Cards::c;
 std::map<int, Card>* Cards::GetMap(ModelData* d){

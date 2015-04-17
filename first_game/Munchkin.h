@@ -49,6 +49,11 @@ private:
 	Image* lockedReady;
 	(Image* level)[9];
 	Image* male, * female;
+	Image* eventIcon, * phaseIcon;
+	(Image* phaseIcons)[8];
+	Image* fold, * sell;
+	Image* ability1, *ability2;
+	Image* turn;
 
 	std::shared_ptr<ModelHandler> model;
 	Snapshot snapshot;
@@ -95,7 +100,13 @@ private:
 	friend class UpPlayer;
 	friend class DownPlayer;
 	friend class PlayerNumberIcon;
-	friend class DiscardButton;
+	friend class FoldButton;
+	friend class SellButton;
+	friend class PhaseIcon;
+	friend class EventIcon;
+	friend class PlayersTurnIcon;
+	friend class Ability1Button;
+	friend class Ability2Button;
 public:
 	void Start();
 	void Update();

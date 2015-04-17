@@ -119,6 +119,7 @@ void Model::StartGame(int n){
 	GiveToAll(4,4);
 	d.plrTurn=FIRSTPLAYER;
 	d.phase=GAMESTART;
+	d.event=NULL;
 }
 Snapshot Model::GetData(int cp) const{
 	Snapshot tmp;
@@ -141,6 +142,8 @@ Snapshot Model::GetData(int cp) const{
 	}
 	tmp.phase=d.phase;
 	tmp.plrTurn=d.plrTurn;
+	if (d.event!=NULL) tmp.event=true; else tmp.event=false;
+	tmp.dice=d.dice;
 	return tmp;
 }
 
@@ -258,6 +261,7 @@ bool Model::UndeadPerm(){
 	if (BeastPerm()&&(map->at(*itF).Undead())&&(std::find_if(pTo->begin(), pTo->end(), [this](const int &c){return (*map)[c].Undead();})!=pTo->end())) return true;
 	return false;
 }
+
 
 void Model::Move(const CardPosition &from, const CardPosition &to){
 	d.plr.at(to.playerNumber).deck[to.vectorName].insert(

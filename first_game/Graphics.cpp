@@ -13,6 +13,12 @@ Graphics::~Graphics(){
 Image* Graphics::NewImage(char* file)
 {
 	SDL_Surface* tmp = IMG_Load(file);
+	if (tmp==NULL) {
+		std::string s="File \"";
+		s+=file;
+		s+="\" is not found or broken"; 
+		throw s.c_str();
+	}
 	Image* image = new Image();
 	image->texture = SDL_CreateTextureFromSurface(renderer, tmp);
 	image->h=tmp->h; 

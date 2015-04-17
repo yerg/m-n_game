@@ -120,6 +120,9 @@ struct Snapshot{
 	std::vector<Player> plr;
 	Phase phase;
 	int plrTurn;
+	bool event;
+	int dice;
+
 };
 
 class GameEvent {

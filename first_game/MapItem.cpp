@@ -21,6 +21,112 @@ void ButtonItem::Draw(){
 	(*view).graphics->DrawImage(image,x,y,0,0,image->GetWidth(),image->GetHeight(),itemWidth,itemHeight);
 }
 
+void PlayersTurnIcon::Draw(){
+	(*view).graphics->DrawImage(image,x,y,0,0,image->GetWidth(),image->GetHeight(),itemWidth,itemHeight);
+	(*view).graphics->DrawImage(image2, x+itemWidth, y, 0,0, image2->GetWidth(), image2->GetHeight(), itemWidth, itemHeight);
+}
+
+EventIcon::EventIcon(Munchkin *v, int x, int y) : ButtonItem(v,x,y){
+	propH=0.5;
+	propW=1;
+
+	image=view->snapshot.event ? view->eventIcon : view->phaseIcon;
+	Settings();
+}
+
+PhaseIcon::PhaseIcon(Munchkin *v, int x, int y) : ButtonItem(v,x,y){
+	propH=0.5;
+	propW=1;
+
+	image=view->phaseIcons[static_cast<int>(view->snapshot.phase)];
+	Settings();
+}
+
+PlayersTurnIcon::PlayersTurnIcon(Munchkin *v, int x, int y) : ButtonItem(v,x,y){
+	propH=0.5;
+	propW=0.5;
+
+	image=view->level[static_cast<int>(view->snapshot.plrTurn)-FIRSTPLAYER];
+	image2=view->turn;
+	Settings();
+}
+
+FoldButton::FoldButton(Munchkin *v, int x, int y) : ButtonItem(v,x,y){
+	propH=0.5;
+	propW=1;
+
+	image=view->fold;
+	Settings();
+}
+
+SellButton::SellButton(Munchkin *v, int x, int y) : ButtonItem(v,x,y){
+	propH=0.5;
+	propW=1;
+
+	image=view->sell;
+	Settings();
+}
+
+Ability1Button::Ability1Button(Munchkin *v, int x, int y) : ButtonItem(v,x,y){
+	propH=0.5;
+	propW=1;
+
+	image=view->ability1;
+	Settings();
+}
+
+Ability2Button::Ability2Button(Munchkin *v, int x, int y) : ButtonItem(v,x,y){
+	propH=0.5;
+	propW=1;
+
+	image=view->ability2;
+	Settings();
+}
+
+void FoldButton::OnClickL(){
+	if (view->selected==true){
+		CardPosition tmp;
+		tmp.playerNumber=FOE;
+		tmp.vectorName=HAND;
+		tmp.position=-1;
+		(*view).model->TryMove(view->selectedCard,tmp,view->cp);
+		view->selected=false;
+	}
+}
+
+void SellButton::OnClickL(){				
+	if (view->selected==true){
+		CardPosition tmp;
+		tmp.playerNumber=FOE;
+		tmp.vectorName=DESK;
+		tmp.position=-1;
+		(*view).model->TryMove(view->selectedCard,tmp,view->cp);
+		view->selected=false;
+	}
+}
+
+void Ability1Button::OnClickL(){
+	if (view->selected==true){
+		CardPosition tmp;
+		tmp.playerNumber=HELP;
+		tmp.vectorName=HAND;
+		tmp.position=-1;
+		(*view).model->TryMove(view->selectedCard,tmp,view->cp);
+		view->selected=false;
+	}
+}
+
+void Ability2Button::OnClickL(){			
+	if (view->selected==true){
+		CardPosition tmp;
+		tmp.playerNumber=HELP;
+		tmp.vectorName=DESK;
+		tmp.position=-1;
+		(*view).model->TryMove(view->selectedCard,tmp,view->cp);
+		view->selected=false;
+	}
+}
+
 ReadyButton::ReadyButton(Munchkin *v, int x, int y) : ButtonItem(v,x,y){
 	propH=0.5;
 	propW=1;
@@ -33,6 +139,7 @@ void ReadyButton::OnClickL(){
 	(*(*view).model).EndPhase(view->snapshot.phase,view->cp);
 	view->phaseClicked=true;
 }
+
 
 GenderButton::GenderButton(Munchkin *v, int x, int y, int pl) : ButtonItem(v,x,y), playerNumber(pl){
 	if ((*view).snapshot.plr[playerNumber].gender) 
@@ -168,3 +275,4 @@ void CardItem::OnClickR(){
 void CardItem::OnClickL(){
 	view->Select(pos);
 }
+
