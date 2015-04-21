@@ -54,6 +54,7 @@ private:
 	Image* fold, * sell;
 	Image* ability1, *ability2;
 	Image* turn;
+	(Image* dices)[6];
 
 	std::shared_ptr<ModelHandler> model;
 	Snapshot snapshot;
@@ -107,6 +108,7 @@ private:
 	friend class PlayersTurnIcon;
 	friend class Ability1Button;
 	friend class Ability2Button;
+	friend class DiceIcon;
 public:
 	void Start();
 	void Update();

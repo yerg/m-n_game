@@ -19,6 +19,22 @@ Card& Card::operator=(const Card& rhs) {
 	item=rhs.item;
 	return *this;
 }
+void Card::Win() const {
+	if (beast||sw) {
+		if (sw) {
+			if(beast) {
+				sw->Handle(d,beast->GainCard(),beast->GainLevel());
+			} else {
+				sw->Handle(d,0,0);
+			}
+		} else {
+			if (d->inCombat.size()==1) {
+				d->plr[d->currentInCombat].level+=beast->GainLevel();
+				GiveTreasure(*d, beast->GainCard(), d->currentInCombat);
+			}
+		}
+	} else throw "StrategyAct bad access";
+}
 int Card::Combat() const {
 	if ((beast)||(item)||(sc)) {
 		int i=0;
@@ -123,8 +139,8 @@ struct CMalignMirror : StrategyCombat {
 		std::for_each(
 			d->plr[d->inCombat[d->currentInCombat]].deck[EQUIP].begin(),
 			d->plr[d->inCombat[d->currentInCombat]].deck[EQUIP].end(),
-			[map](const int &c){
-			//	if ((*map)[c].CardType==EQUIPPABLE) i-=(*map)[c].Combat();
+			[map,&i](const int &c){
+				if ((*map)[c].CardType()&EQUIPPABLE) i-=(*map)[c].Combat();
 		});
 		return i;
 	}

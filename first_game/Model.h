@@ -18,24 +18,26 @@ class Model {
 	std::vector<int> *pFrom;
 	std::vector<int> *pTo;
 	CardType fromType;
+	int cp;
 
 	void GiveToAll(int nd, int nt);
 	void StartGame(int n);
-	void DoCombat();
+	bool DoCombat();
 	void Move(const CardPosition &from, const CardPosition &to);
-	void InCombat(int cp);
+	void InCombat(int pl);
 
-	bool SettingPerm();
-	bool EquipPerm();
-	bool DeskPerm();
-	bool BeastPerm();
-	bool UndeadPerm();
+	void SettingMove();
+	void EquipMove();
+	void DeskMove();
+	void BeastMove();
+	void UndeadMove();
+	void FoldSetting();
 
 	Model(int n) {StartGame(n);}
 	Model(const Model&){}
 	Snapshot GetData(int cp) const;
-	void TryMove(CardPosition from, CardPosition to, int cp);
-	void EndPhase(Phase phaseToClose, int cp);
+	void TryMove(CardPosition fromIn, CardPosition toIn, int cpIn);
+	void EndPhase(Phase phaseToClose, int cpIn);
 
 	friend class ModelHandler;
 };
@@ -43,6 +45,8 @@ class Model {
 void GiveDoor(ModelData& d, int n, int pl);
 void GiveTreasure(ModelData& d, int n, int pl);
 Setting CheckSetting(ModelData& d, std::map<int, Card>* map, int pl);
+void CheckEquip(ModelData& d, std::map<int, Card>* map, int pl);
+
 
 class ModelHandler{
 	std::unique_ptr<Model> model;

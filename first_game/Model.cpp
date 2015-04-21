@@ -67,29 +67,51 @@ Setting CheckSetting(ModelData& d, std::map<int, Card>* map, int pl) {
 	if ( (classes>2) || ((classes==2) && (!(tmp&MULTICLASS))) || ((classes<1)&&(tmp&MULTICLASS)) ) throw "Bad classes math";
 	if ( (races>2) || ((races==2)&&(!(tmp&MULTIRACE))) || ((races<1)&&(tmp&MULTIRACE)) ) throw "Bad races math";
 
-	if (classes==1 && tmp&MULTICLASS) {
-		if (tmp&DWARFCARD) stg=stg|SUPERDWARF;
-		if (tmp&ELFCARD) stg=stg|SUPERELF;
-		if (tmp&HALFLINGCARD) stg=stg|SUPERHALFLING; else throw "Empty multiclass";
+	if (classes==1 && tmp&MULTIRACE) {
+		if (tmp&DWARFCARD){ stg=stg|SUPERDWARF;
+		} else if (tmp&ELFCARD){ stg=stg|SUPERELF;
+		} else if (tmp&HALFLINGCARD){ stg=stg|SUPERHALFLING; 
+		} else { throw "Empty multiclass";}
 	} else {
-		if (tmp&DWARFCARD) stg=stg|DWARF;
-		if (tmp&ELFCARD) stg=stg|ELF;
-		if (tmp&HALFLINGCARD) stg=stg|HALFLING; else stg=stg|HUMAN;
+		if (tmp&DWARFCARD){ stg=stg|DWARF;
+		} else if (tmp&ELFCARD){ stg=stg|ELF;
+		} else if (tmp&HALFLINGCARD){ stg=stg|HALFLING; 
+		} else stg=stg|HUMAN;
 	}
 
 	if (classes==1 && tmp&MULTICLASS) {
-		if (tmp&WARRIORCARD) stg=stg|SUPERWARRIOR;
-		if (tmp&CLERICCARD) stg=stg|SUPERCLERIC;
-		if (tmp&WIZARDCARD) stg=stg|SUPERWIZARD;
-		if (tmp&THIEFCARD) stg=stg|SUPERTHIEF; else throw "Empty multirace";
+		if (tmp&WARRIORCARD){ stg=stg|SUPERWARRIOR;
+		} else if (tmp&CLERICCARD){ stg=stg|SUPERCLERIC;
+		} else if (tmp&WIZARDCARD){ stg=stg|SUPERWIZARD;
+		} else if (tmp&THIEFCARD){ stg=stg|SUPERTHIEF; 
+		} else throw "Empty multirace";
 	} else {
-		if (tmp&WARRIORCARD) stg=stg|WARRIOR;
-		if (tmp&CLERICCARD) stg=stg|CLERIC;
-		if (tmp&WIZARDCARD) stg=stg|WIZARD;
-		if (tmp&THIEFCARD) stg=stg|SUPERTHIEF; else stg=stg|CLASSLESS;
+		if (tmp&WARRIORCARD){ stg=stg|WARRIOR;
+		} else if (tmp&CLERICCARD){ stg=stg|CLERIC;
+		} else if (tmp&WIZARDCARD){ stg=stg|WIZARD;
+		} else if (tmp&THIEFCARD){ stg=stg|THIEF; 
+		} else  stg=stg|CLASSLESS;
 	}
 
 	return stg;
+}
+void CheckEquip(ModelData& d, std::map<int, Card>* map, int pl){
+	Setting setting=CheckSetting(d,map,pl);
+	Slot tmp=SLOTLESS;
+	d.plr[pl].deck[EQUIP].erase(std::remove_if(d.plr[pl].deck[EQUIP].begin(), d.plr[pl].deck[EQUIP].end(),[&](int c)->bool{
+		if (setting&DWARF) tmp=(Slot(~BIG))&tmp;
+		bool b=false;
+		if ((*map)[c].CardType()&ITEM) {
+			if (((*map)[c].Slot()&tmp) || (setting&(*map)[c].Forbid())){
+				d.plr[pl].deck[DESK].push_back(c);
+				b=true;
+			} 
+		tmp=((TWOHANDED&(*map)[c].Slot()) ? tmp=TWOHANDED|ONEHANDED|tmp 
+			: (ONEHANDED&(*map)[c].Slot()) ? tmp&TWOHANDED ? tmp=ONEHANDED|tmp : tmp=TWOHANDED|tmp 
+			: tmp|(*map)[c].Slot());
+		}
+		return b;
+	}),d.plr[pl].deck[EQUIP].end());
 }
 
 void Model::GiveToAll(int nd, int nt){
@@ -116,7 +138,7 @@ void Model::StartGame(int n){
 	for(int i=95; i<170;i++) d.treasures.push_back(i);
 	random_shuffle(d.treasures.begin(),d.treasures.end());
 
-	GiveToAll(4,4);
+	GiveToAll(9,16);
 	d.plrTurn=FIRSTPLAYER;
 	d.phase=GAMESTART;
 	d.event=NULL;
@@ -142,20 +164,22 @@ Snapshot Model::GetData(int cp) const{
 	}
 	tmp.phase=d.phase;
 	tmp.plrTurn=d.plrTurn;
+	tmp.currentInCombat=d.currentInCombat;
+	tmp.inCombat=d.inCombat;
 	if (d.event!=NULL) tmp.event=true; else tmp.event=false;
 	tmp.dice=d.dice;
 	return tmp;
 }
 
-void Model::TryMove(CardPosition fromIn, CardPosition toIn, int cp){
+void Model::TryMove(CardPosition fromIn, CardPosition toIn, int cpIn){
 	from=fromIn;
 	to=toIn;
+	cp=cpIn;
 	pFrom=&(d.plr.at(from.playerNumber).deck[from.vectorName]);
 	pTo=&(d.plr.at(to.playerNumber).deck[to.vectorName]);
 
 
 	if ((from==to)||(from.position>=pFrom->size())||((to.position>=pTo->size())&&(to.position>0))||(from.playerNumber!=cp)) return;
-	bool permission=false;
 	fromType=map->at(pFrom->at(from.position)).CardType();
 	itF=pFrom->begin()+from.position;
 	itT=pTo->begin()+to.position+1;
@@ -172,43 +196,39 @@ void Model::TryMove(CardPosition fromIn, CardPosition toIn, int cp){
 
 		
 	} else {
-
+		SettingMove();
+		FoldSetting();
 		switch (d.phase) {
 		case GAMESTART:
-			permission=SettingPerm()||EquipPerm()||DeskPerm();
+			EquipMove();
+			DeskMove();
 			break;
 		case BEGIN:
-			permission=SettingPerm()||EquipPerm()||DeskPerm();
+			EquipMove();
+			DeskMove();
 			break;
 		case KICKOPEN:
-			if ((cp==d.plrTurn)&&(BeastPerm() )) {
-				to.position=pTo->size()-1;
+			if (cp==d.plrTurn) {
 				InCombat(cp);
-				permission=true;
+				BeastMove();
 			}
 			break;
 		case COMBAT:
-			permission=SettingPerm();
-			if(UndeadPerm()&&(fromType&STRATEGYPREPARATION)) {
-				std::for_each(d.inCombat.begin(), d.inCombat.end(), [this](const int &pl){ (*map)[*itF].Act(pl);});
-				to.position=pTo->size()-1;
-				permission=true;
-			}
 			break;
 		case ESCAPE:
-			permission=true;
 			break;
 		case POSTESCAPE:
-			permission=true;
 			break;
 		case OPENPICK:
-			permission=SettingPerm()||EquipPerm()||DeskPerm();
+			EquipMove();
+			DeskMove();
 			break;
 		case CHARITY:
-			permission=SettingPerm()||EquipPerm()||DeskPerm();
+
+			EquipMove();
+			DeskMove();
 			break;
 		}
-		if (permission) Move(from,to); else return;
 	}
 }
 
@@ -222,46 +242,82 @@ void Model::InCombat(int pl){
 	);
 }
 
-bool Model::SettingPerm(){
-	return (fromType&(CLASS|RACE|MULTICLASS|MULTIRACE)) && (from.playerNumber==to.playerNumber) && (to.vectorName==EQUIP) && (from.vectorName==HAND) &&( 
+void Model::SettingMove(){
+	if ((fromType&(CLASS|RACE|MULTICLASS|MULTIRACE)) && (from.playerNumber==to.playerNumber) && (to.vectorName==EQUIP) && (from.vectorName==HAND) &&( 
 		( (fromType&CLASS)&&(std::find_if(pTo->begin(), pTo->end(), [this](const int &c){return CLASS&(*map)[c].CardType();})==pTo->end()) ) || 
 		( (fromType&RACE )&&(std::find_if(pTo->begin(), pTo->end(), [this](const int &c){return RACE &(*map)[c].CardType();})==pTo->end()) ) ||
 		( (fromType&MULTICLASS)&&(std::find_if(pTo->begin(), pTo->end(), [this](const int &c){return MULTICLASS&(*map)[c].CardType();})==pTo->end())&&(std::find_if(pTo->begin(), pTo->end(), [this](const int &c){return CLASS&(*map)[c].CardType();})!=pTo->end()) ) ||
-		( (fromType&MULTIRACE )&&(std::find_if(pTo->begin(), pTo->end(), [this](const int &c){return MULTIRACE &(*map)[c].CardType();})==pTo->end())&&(std::find_if(pTo->begin(), pTo->end(), [this](const int &c){return RACE &(*map)[c].CardType();})!=pTo->end()) ) );
+		( (fromType&MULTIRACE )&&(std::find_if(pTo->begin(), pTo->end(), [this](const int &c){return MULTIRACE &(*map)[c].CardType();})==pTo->end())&&(std::find_if(pTo->begin(), pTo->end(), [this](const int &c){return RACE &(*map)[c].CardType();})!=pTo->end()) ) )) 
+	{
+		Move(from,to);
+		CheckEquip(d,map,cp);
+	}
 }
-bool Model::EquipPerm(){
+void Model::EquipMove(){
 	Setting setting;
 	Slot slot, tmp=SLOTLESS;
 	if ( (fromType&EQUIPPABLE)&&(to.vectorName==EQUIP)&&(from.playerNumber==to.playerNumber) ) {
+		
 		slot=map->at(*itF).Slot();
 		setting=CheckSetting(d,map,from.playerNumber);
+		
 		if (!(setting&map->at(*itF).Forbid())) {
 			std::for_each(pTo->begin(), pTo->end(), [this, &tmp](const int &c){
 				if ((*map)[c].CardType()&ITEM){
 					tmp = ((TWOHANDED&(*map)[c].Slot()) ? tmp=TWOHANDED|ONEHANDED|tmp 
 						: (ONEHANDED&(*map)[c].Slot()) ? tmp&TWOHANDED ? tmp=ONEHANDED|tmp : tmp=TWOHANDED|tmp 
-						: tmp|(*map)[c].Slot());
-				}
+						: tmp|(*map)[c].Slot());}
 			});
 			if (setting&DWARF) tmp=(Slot(~BIG))&tmp;
-			if (!(tmp&slot)) return true;
+			if (!(tmp&slot)) {
+				Move(from,to);
+			}
 		}
 	}
-	return false;
 }
-bool Model::DeskPerm(){
-	if ((fromType&ITEM)&&(to.vectorName==DESK)&&(to.playerNumber==from.playerNumber)) return true;
-	return false;
+void Model::DeskMove(){
+	if ((fromType&ITEM)&&(to.vectorName==DESK)&&(to.playerNumber==from.playerNumber)) Move(from,to);
 }
-bool Model::BeastPerm(){
-	if ((fromType&BEAST)&&(to.playerNumber==FOE)&&(to.vectorName==EQUIP)) return true;
-	return false;
+void Model::BeastMove(){
+	if ((fromType&BEAST)&&(to.playerNumber==FOE)&&(to.vectorName==EQUIP)){
+		if(fromType&STRATEGYPREPARATION) {
+			std::for_each(d.inCombat.begin(), d.inCombat.end(), [this](const int &pl){ (*map)[*itF].Act(pl);});
+		}
+		to.position=pTo->size()-1;
+		Move(from,to);
+	}
 }
-bool Model::UndeadPerm(){
-	if (BeastPerm()&&(map->at(*itF).Undead())&&(std::find_if(pTo->begin(), pTo->end(), [this](const int &c){return (*map)[c].Undead();})!=pTo->end())) return true;
-	return false;
+void Model::UndeadMove(){
+	if ((fromType&BEAST)&&(map->at(*itF).Undead())&&(std::find_if(pTo->begin(), pTo->end(), [this](const int &c){return (*map)[c].Undead();})!=pTo->end())) BeastMove();
 }
-
+void Model::FoldSetting(){
+	if((fromType&(CLASS|RACE)) && (to.vectorName==HAND) && (to.playerNumber==FOE) && (from.vectorName==EQUIP)){
+		d.rd.push_back(*itF);
+		d.plr.at(from.playerNumber).deck[from.vectorName].erase(d.plr.at(from.playerNumber).deck[from.vectorName].begin()+from.position);
+		if (fromType&(CLASS)) {
+			if (std::find_if(pFrom->begin(),pFrom->end(), [this](const int &c){return CLASS&(*map)[c].CardType();})==pFrom->end()) {
+				for (std::vector<int>::iterator it=pFrom->begin(); it!=pFrom->end(); ++it) {
+					if (MULTICLASS&(*map)[*it].CardType()) {
+						d.rd.push_back(*it);
+						d.plr.at(from.playerNumber).deck[from.vectorName].erase(it);
+						return;
+					}
+				}
+			}
+		} else {
+			if (std::find_if(pFrom->begin(),pFrom->end(), [this](const int &c){return RACE&(*map)[c].CardType();})==pFrom->end()) {
+				for (std::vector<int>::iterator it=pFrom->begin(); it!=pFrom->end(); ++it) {
+					if (MULTIRACE&(*map)[*it].CardType()) {
+						d.rd.push_back(*it);
+						d.plr.at(from.playerNumber).deck[from.vectorName].erase(it);
+						return;
+					}
+				}
+			}
+		}
+		CheckEquip(d,map,cp);
+	}
+}
 
 void Model::Move(const CardPosition &from, const CardPosition &to){
 	d.plr.at(to.playerNumber).deck[to.vectorName].insert(
@@ -274,7 +330,8 @@ void Model::Move(const CardPosition &from, const CardPosition &to){
 		);
 }
 
-void Model::EndPhase(Phase phaseToClose, int cp){
+void Model::EndPhase(Phase phaseToClose, int cpIn){
+	cp=cpIn;
 	std::vector<int>::iterator it;
 	if (phaseToClose==d.phase) {
 		switch (d.phase) {
@@ -298,7 +355,7 @@ void Model::EndPhase(Phase phaseToClose, int cp){
 				}
 				//Check cardType
 				if (( map->at(*d.plr[FOE].deck[EQUIP].begin()) ).cType & BEAST) {
-					d.phase=COMBAT;
+					InCombat(d.plrTurn);
 				} else {
 					d.phase=KICKOPEN;
 				}
@@ -318,14 +375,48 @@ void Model::EndPhase(Phase phaseToClose, int cp){
 			phaseAdjust.at(cp)=1;
 			it=find(phaseAdjust.begin(),phaseAdjust.end(),0);
 			if (it!=phaseAdjust.end()){
-				
 				phaseAdjust.assign(d.totalplayers,0);
+				for (int i=0;i<d.inCombat.size();++i){
+					d.currentInCombat=i;
+					if(DoCombat()) {
+						std::for_each(d.plr[FOE].deck[EQUIP].begin(),d.plr[FOE].deck[EQUIP].end(),[this](const int& c){if((*map)[c].CardType()&(BEAST|STRATEGYCOMBAT)) (*map)[c].Win();});
+					}
+					else {
+
+					}
+				}
+				d.phase=CHARITY;
 			}
 			break;
 
 		case CHARITY :
-			
+			if ((cp==d.plrTurn)&&(d.plr[cp].deck[HAND].size()<=5)) {
+				if(d.plrTurn!=d.totalplayers) ++d.plrTurn; else d.plrTurn=FIRSTPLAYER;
+				d.phase=BEGIN;
+			}
 			break;
 		}
+	}
+}
+
+bool Model::DoCombat(){
+	int score=0;
+	bool warrior;
+	for(std::vector<int>::iterator it=d.inCombat.begin();it!=d.inCombat.end();++it){
+		std::for_each(d.plr[*it].deck[EQUIP].begin(), d.plr[*it].deck[EQUIP].end(), [this,&it,&score](const int &c) {
+			if ( (*map)[d.plr[*it].deck[EQUIP].at(c)].CardType()&(ITEM|STRATEGYCOMBAT) ) { score+=(*map)[d.plr[*it].deck[EQUIP].at(c)].Combat(); }
+			score+=d.plr[*it].level;
+		});
+	}
+	std::for_each(d.plr[HELP].deck[EQUIP].begin(), d.plr[HELP].deck[EQUIP].end(), [&score,this](const int &c) {
+		if ( (*map)[d.plr[HELP].deck[EQUIP].at(c)].CardType()&(ITEM|STRATEGYCOMBAT|BEAST) ) { score+=(*map)[d.plr[HELP].deck[EQUIP].at(c)].Combat(); }
+	});
+	std::for_each(d.plr[FOE].deck[EQUIP].begin(), d.plr[FOE].deck[EQUIP].end(), [&score,this](const int &c) {
+		if ( (*map)[d.plr[FOE].deck[EQUIP].at(c)].CardType()&(ITEM|STRATEGYCOMBAT|BEAST) ) { score-=(*map)[d.plr[FOE].deck[EQUIP].at(c)].Combat(); }
+	});
+	if (WARRIOR&CheckSetting(d,map,d.inCombat[d.currentInCombat])) {
+		return score>0 ? true : false;
+	} else {
+		return score>=0 ? true : false;
 	}
 }

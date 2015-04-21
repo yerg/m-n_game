@@ -99,6 +99,14 @@ public:
 	virtual void OnClickL();
 };
 
+class DiceIcon : public ButtonItem {
+	int playerNumber;
+public:
+	DiceIcon(Munchkin *v, int x, int y,int pl);
+	virtual void OnClickL(){}
+	virtual void Draw();
+};
+
 class UpPlayer : public ButtonItem {
 public:
 	UpPlayer(Munchkin *v, int x, int y);

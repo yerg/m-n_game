@@ -47,13 +47,21 @@ void Munchkin::StartSettings()
 		strcat(filename, ".bmp");
 		level[i]=graphics->NewImage(filename);
 	}
-	for (int i=0; i<8; i++)
+	for (int i=0; i<9; i++)
 	{
 		char filename[20]; char letter[2]={'0'+i,'\0'};
 		strcpy(filename,"res\\phase");
 		strcat(filename, letter);
 		strcat(filename, ".bmp");
 		phaseIcons[i]=graphics->NewImage(filename);
+	}
+	for (int i=0; i<6; i++)
+	{
+		char filename[20]; char letter[2]={'1'+i,'\0'};
+		strcpy(filename,"res\\dice");
+		strcat(filename, letter);
+		strcat(filename, ".bmp");
+		dices[i]=graphics->NewImage(filename);
 	}
 
 
@@ -77,7 +85,7 @@ void Munchkin::ShowCard(int id, int x, int y){
 
 void Munchkin::ZoomCard(int id){
 	if (id>=0){
-		graphics->DrawImage(card_map[id/10],  11.6*cW, 0, (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0,          mapW/5,  mapH/2, cardRatio*wH, wH);
+		graphics->DrawImage(card_map[id/10],  11.1*cW, 0, (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0,          mapW/5,  mapH/2, cardRatio*wH, wH);
 	} //wW-cardRatio*wH   as alternate x parameter(for allign to right border)
 }
 
@@ -103,6 +111,9 @@ void Munchkin::FillMap(){
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new LevelIcon        (this, cW*3.3, 0.25*cH, cp)));
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new GenderButton     (this, cW*3.3, 0.75*cH, cp)));
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new PlayerNumberIcon (this, cW*3.3, 4.5 *cH, cp)));
+	if(((snapshot.phase==ESCAPE)||(snapshot.phase==POSTESCAPE))&&(snapshot.inCombat[snapshot.currentInCombat]==cp)) {
+		mapOfItems.push_back(std::unique_ptr<MapItem> (new PlayerNumberIcon (this, cW*3.3, 1.5 *cH, cp)));
+	}
 	FillLine(EQUIP, FOE, 3.9);
 	FillLine(EQUIP, HELP, 5.0);
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new ReadyButton      (this, cW*6.1, 0.25*cH)));
@@ -116,6 +127,9 @@ void Munchkin::FillMap(){
 
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new LevelIcon        (this, cW*7.3, 0.25*cH, ep)));
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new GenderButton     (this, cW*7.3, 0.75*cH, ep)));
+	if(((snapshot.phase==ESCAPE)||(snapshot.phase==POSTESCAPE))&&(snapshot.inCombat[snapshot.currentInCombat]==ep)) {
+		mapOfItems.push_back(std::unique_ptr<MapItem> (new PlayerNumberIcon (this, cW*7.3, 1.5 *cH, ep)));
+	}
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new UpPlayer         (this, cW*7.3, 4.25*cH)));
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new PlayerNumberIcon (this, cW*7.3, 4.5 *cH, ep)));
 	mapOfItems.push_back(std::unique_ptr<MapItem> (new DownPlayer       (this, cW*7.3, 5   *cH)));

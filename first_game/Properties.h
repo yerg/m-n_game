@@ -97,7 +97,7 @@ inline Slot operator|(Slot a, Slot b) {return static_cast<Slot>(static_cast<int>
 inline Slot operator&(Slot a, Slot b) {return static_cast<Slot>(static_cast<int>(a) & static_cast<int>(b));}
 
 enum CardGroup {HAND,EQUIP,DESK};
-enum Phase {GAMESTART,BEGIN,KICKOPEN,COMBAT,ESCAPE,POSTESCAPE,OPENPICK,CHARITY};
+enum Phase {GAMESTART,BEGIN,KICKOPEN,COMBAT,ESCAPE,POSTESCAPE,OPENPICK,CHARITY,END};
 struct CardPosition {
 	CardGroup vectorName;
 	int playerNumber;
@@ -122,7 +122,8 @@ struct Snapshot{
 	int plrTurn;
 	bool event;
 	int dice;
-
+	std::vector<int> inCombat;
+	int currentInCombat;
 };
 
 class GameEvent {

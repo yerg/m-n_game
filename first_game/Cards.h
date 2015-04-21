@@ -39,7 +39,7 @@ struct StrategyCombat {
 	}
 };
 struct StrategyWin {
-	virtual void Handle(ModelData*d, int gainCard, int gainLevel);
+	virtual void Handle(ModelData*d, int gainCard, int gainLevel)=0;
 };
 struct StrategySwap {
 	virtual void Handle(ModelData*d, std::map<int, Card>* const map, CardPosition from, CardPosition to)=0;
@@ -112,10 +112,9 @@ public:
 
 	void Act(const int &pl)const{if(sa) return sa->Handle(d,map,pl); else throw "StrategyAct bad access";}
 
-
 	int Combat() const;
 //	bool Escape() {return se->Handle(d, map);}
-//	void Win() const
+	void Win() const;
 };
 
 

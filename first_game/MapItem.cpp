@@ -26,6 +26,10 @@ void PlayersTurnIcon::Draw(){
 	(*view).graphics->DrawImage(image2, x+itemWidth, y, 0,0, image2->GetWidth(), image2->GetHeight(), itemWidth, itemHeight);
 }
 
+void DiceIcon::Draw(){
+	if (image!=NULL) ButtonItem::Draw();
+}
+
 EventIcon::EventIcon(Munchkin *v, int x, int y) : ButtonItem(v,x,y){
 	propH=0.5;
 	propW=1;
@@ -125,6 +129,16 @@ void Ability2Button::OnClickL(){
 		(*view).model->TryMove(view->selectedCard,tmp,view->cp);
 		view->selected=false;
 	}
+}
+
+DiceIcon::DiceIcon(Munchkin *v, int x, int y, int pl) : ButtonItem(v,x,y), playerNumber(pl){
+	propH=0.5;
+	propW=0.5;
+
+	if (((*view).snapshot.dice>0)&&((*view).snapshot.dice<=6)){
+		image=view->dices[(*view).snapshot.dice-1];
+	}
+	Settings();
 }
 
 ReadyButton::ReadyButton(Munchkin *v, int x, int y) : ButtonItem(v,x,y){
