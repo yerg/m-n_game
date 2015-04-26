@@ -50,7 +50,7 @@ private:
 	(Image* level)[9];
 	Image* male, * female;
 	Image* eventIcon, * phaseIcon;
-	(Image* phaseIcons)[8];
+	(Image* phaseIcons)[9];
 	Image* fold, * sell;
 	Image* ability1, *ability2;
 	Image* turn;
@@ -58,7 +58,6 @@ private:
 
 	std::shared_ptr<ModelHandler> model;
 	Snapshot snapshot;
-	Phase phase;
 	bool phaseClicked;
 	
 	std::vector<Int3> counter;

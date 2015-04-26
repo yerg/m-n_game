@@ -123,9 +123,9 @@ void Model::GiveToAll(int nd, int nt){
 void Model::StartGame(int n){
 	map=Cards::GetMap(&d);
 	d.totalplayers=n+FIRSTPLAYER;
-	d.plr.resize(d.totalplayers);
-	phaseAdjust.resize(d.totalplayers);
 	phaseAdjust.assign(d.totalplayers, 0);
+	cardCounter.assign(d.totalplayers, 0);
+	
 	srand(time(NULL));
 
 	d.doors.reserve(95);
@@ -139,6 +139,8 @@ void Model::StartGame(int n){
 	random_shuffle(d.treasures.begin(),d.treasures.end());
 
 	GiveToAll(9,16);
+	d.escape=false;
+	d.dice=0;
 	d.plrTurn=FIRSTPLAYER;
 	d.phase=GAMESTART;
 	d.event=NULL;
@@ -168,6 +170,7 @@ Snapshot Model::GetData(int cp) const{
 	tmp.inCombat=d.inCombat;
 	if (d.event!=NULL) tmp.event=true; else tmp.event=false;
 	tmp.dice=d.dice;
+	tmp.escape=d.escape;
 	return tmp;
 }
 
@@ -224,7 +227,13 @@ void Model::TryMove(CardPosition fromIn, CardPosition toIn, int cpIn){
 			DeskMove();
 			break;
 		case CHARITY:
-
+			CharityMove();
+			if (d.plr[cp].deck[HAND].size()<=5) {
+				if(d.plrTurn!=d.totalplayers) ++d.plrTurn; else d.plrTurn=FIRSTPLAYER;
+				d.phase=BEGIN;
+			}
+			break;
+		case END:
 			EquipMove();
 			DeskMove();
 			break;
@@ -242,6 +251,22 @@ void Model::InCombat(int pl){
 	);
 }
 
+void Model::CharityMove(){
+	int *currentCounter;
+	if ((from.playerNumber=cp)&&(to.vectorName==HAND)&&(from.vectorName==HAND)){
+		if (cardCounter[cp]>0){
+			if (to.playerNumber==FOE) {
+				FoldFrom();
+			}
+		} else {
+			currentCounter=&cardCounter[to.playerNumber];
+			if ((*currentCounter>0)&&(std::find_if(cardCounter.begin(),cardCounter.end(),[currentCounter](const int &i){return ((i>0)&&(*currentCounter>i));})==cardCounter.end())) {
+				++(*currentCounter);
+				Move(from,to);
+			}
+		}
+	}
+}
 void Model::SettingMove(){
 	if ((fromType&(CLASS|RACE|MULTICLASS|MULTIRACE)) && (from.playerNumber==to.playerNumber) && (to.vectorName==EQUIP) && (from.vectorName==HAND) &&( 
 		( (fromType&CLASS)&&(std::find_if(pTo->begin(), pTo->end(), [this](const int &c){return CLASS&(*map)[c].CardType();})==pTo->end()) ) || 
@@ -292,8 +317,7 @@ void Model::UndeadMove(){
 }
 void Model::FoldSetting(){
 	if((fromType&(CLASS|RACE)) && (to.vectorName==HAND) && (to.playerNumber==FOE) && (from.vectorName==EQUIP)){
-		d.rd.push_back(*itF);
-		d.plr.at(from.playerNumber).deck[from.vectorName].erase(d.plr.at(from.playerNumber).deck[from.vectorName].begin()+from.position);
+		FoldFrom();
 		if (fromType&(CLASS)) {
 			if (std::find_if(pFrom->begin(),pFrom->end(), [this](const int &c){return CLASS&(*map)[c].CardType();})==pFrom->end()) {
 				for (std::vector<int>::iterator it=pFrom->begin(); it!=pFrom->end(); ++it) {
@@ -319,30 +343,36 @@ void Model::FoldSetting(){
 	}
 }
 
-void Model::Move(const CardPosition &from, const CardPosition &to){
-	d.plr.at(to.playerNumber).deck[to.vectorName].insert(
-		d.plr.at(to.playerNumber).deck[to.vectorName].begin()+to.position+1,
-		*(d.plr.at(from.playerNumber).deck[from.vectorName].begin()+from.position)
+void Model::Move(const CardPosition &moveFrom, const CardPosition &moveTo){
+	d.plr.at(moveTo.playerNumber).deck[moveTo.vectorName].insert(
+		d.plr.at(moveTo.playerNumber).deck[moveTo.vectorName].begin()+moveTo.position+1,
+		*(d.plr.at(moveFrom.playerNumber).deck[moveFrom.vectorName].begin()+moveFrom.position)
 		);
 
-	d.plr.at(from.playerNumber).deck[from.vectorName].erase(
-		d.plr.at(from.playerNumber).deck[from.vectorName].begin()+from.position
+	d.plr.at(moveFrom.playerNumber).deck[moveFrom.vectorName].erase(
+		d.plr.at(moveFrom.playerNumber).deck[moveFrom.vectorName].begin()+moveFrom.position
 		);
 }
 
+bool Model::TryEnd(){
+	phaseAdjust.at(cp)=1;
+	iterPlayer=find(phaseAdjust.begin()+FIRSTPLAYER,phaseAdjust.end(),0);
+	if (iterPlayer==phaseAdjust.end()){
+		phaseAdjust.assign(d.totalplayers,0);
+		return true;
+	} else {
+		return false;
+	}
+}
 void Model::EndPhase(Phase phaseToClose, int cpIn){
 	cp=cpIn;
-	std::vector<int>::iterator it;
 	if (phaseToClose==d.phase) {
 		switch (d.phase) {
+
 		case GAMESTART :
-			phaseAdjust.at(cp)=1;
-			it=find(phaseAdjust.begin(),phaseAdjust.end(),0);
-			if (it!=phaseAdjust.end()){
-				d.phase=BEGIN;
-				phaseAdjust.assign(d.totalplayers,0);
-			}	
+			if (TryEnd()) d.phase=BEGIN;
 			break;
+
 		case BEGIN :
 			//If cp pressed - open door
 			if (cp==d.plrTurn) { 
@@ -363,60 +393,141 @@ void Model::EndPhase(Phase phaseToClose, int cpIn){
 			break;
 
 		case KICKOPEN :
-			phaseAdjust.at(cp)=1;
-			it=find(phaseAdjust.begin(),phaseAdjust.end(),0);
-			if (it!=phaseAdjust.end()){
-				d.phase=CHARITY;
-				phaseAdjust.assign(d.totalplayers,0);
-			}	
+			if (TryEnd()) d.phase=END;
 			break;
 
 		case COMBAT :
-			phaseAdjust.at(cp)=1;
-			it=find(phaseAdjust.begin(),phaseAdjust.end(),0);
-			if (it!=phaseAdjust.end()){
-				phaseAdjust.assign(d.totalplayers,0);
-				for (int i=0;i<d.inCombat.size();++i){
-					d.currentInCombat=i;
-					if(DoCombat()) {
+			if (TryEnd()){
+				if(DoCombat()) {
+					for (int i=0;i<d.inCombat.size();++i){
+						d.currentInCombat=i;
 						std::for_each(d.plr[FOE].deck[EQUIP].begin(),d.plr[FOE].deck[EQUIP].end(),[this](const int& c){if((*map)[c].CardType()&(BEAST|STRATEGYCOMBAT)) (*map)[c].Win();});
 					}
-					else {
-
+					ClearAfterCombat();
+					d.phase=END;
+				} else {
+					d.dice=rand()%6+1;
+					d.phase=ESCAPE;
+					d.currentInCombat=0;
+					iterBeastEscape=d.plr[FOE].deck[EQUIP].begin();
+					iterBeastEscape=std::find_if(iterBeastEscape,d.plr[FOE].deck[EQUIP].end(),[this](const int& c){return static_cast<bool>((*map)[c].CardType()&BEAST);});
+					if (iterBeastEscape!=d.plr[FOE].deck[EQUIP].end()){
+							
 					}
 				}
-				d.phase=CHARITY;
 			}
 			break;
 
+		case ESCAPE :
+			if(TryEnd()) d.phase=POSTESCAPE;
+			break;
+
+		case POSTESCAPE :
+			if (TryEnd()){
+				iterBeastEscape=std::find_if(++iterBeastEscape,d.plr[FOE].deck[EQUIP].end(),[this](const int& c){return static_cast<bool>((*map)[c].CardType()&BEAST);});
+				if (iterBeastEscape==d.plr[FOE].deck[EQUIP].end()) {
+					d.currentInCombat++;
+					if(d.currentInCombat>=d.inCombat.size()) {
+						ClearAfterCombat();
+						d.phase=END;
+					} else {
+						iterBeastEscape=d.plr[FOE].deck[EQUIP].begin();
+						iterBeastEscape=std::find_if(iterBeastEscape,d.plr[FOE].deck[EQUIP].end(),[this](const int& c){return static_cast<bool>((*map)[c].CardType()&BEAST);});
+						d.phase=ESCAPE;
+					}
+				} else {
+					d.phase=ESCAPE;
+				}
+			}
+			break;
+		case END :
+			if (cp==d.plrTurn) {
+				if(d.plr[cp].deck[HAND].size()<=5){
+					if(d.plrTurn!=d.totalplayers) ++d.plrTurn; else d.plrTurn=FIRSTPLAYER;
+					d.phase=BEGIN;
+				} else {
+					CardCounterReset();
+					d.phase=CHARITY;
+				}
+			}
+			break;
 		case CHARITY :
 			if ((cp==d.plrTurn)&&(d.plr[cp].deck[HAND].size()<=5)) {
 				if(d.plrTurn!=d.totalplayers) ++d.plrTurn; else d.plrTurn=FIRSTPLAYER;
-				d.phase=BEGIN;
+				d.phase=BEGIN; throw "Bad CHARITY Move block";
 			}
 			break;
+
 		}
 	}
 }
 
+void Model::FoldFrom(){
+	if(fromType&DOOR){
+		d.rd.push_back(*itF);
+	} else if (fromType&TREASURE) {
+		d.rt.push_back(*itF);
+	} else throw "Card is without DOOR\TREASURE type";
+	d.plr.at(from.playerNumber).deck[from.vectorName].erase(d.plr.at(from.playerNumber).deck[from.vectorName].begin()+from.position);
+}
+void Model::CardCounterReset(){
+	int minLevel=10;
+	cardCounter.assign(d.totalplayers,0);
+	for (int i=FIRSTPLAYER; i<=d.totalplayers; i++) {
+		if (d.plr[i].level<minLevel) minLevel=d.plr[i].level;
+	}
+	
+}
+void Model::ClearAfterCombat(){
+	std::vector<int> *currentVector;
+	for (d.currentInCombat=0; d.currentInCombat<d.inCombat.size();d.currentInCombat++) {
+		currentVector=&d.plr[d.inCombat[d.currentInCombat]].deck[EQUIP];
+		currentVector->erase(std::remove_if(currentVector->begin(),currentVector->end(),
+			[this](const int& c)->bool{
+				if((*map)[c].CardType()&DELETEAFTERCOMBAT) { d.rd.push_back(c); return true;} 
+				else { return false;}
+		}), currentVector->end());
+	}
+	std::for_each(
+		d.plr[FOE].deck[EQUIP].begin(),
+		d.plr[FOE].deck[EQUIP].end(),
+		[this](const int& c){
+			if((*map)[c].CardType()&DOOR){
+				d.rd.push_back(c);
+			} else if((*map)[c].CardType()&TREASURE) {
+				d.rt.push_back(c);
+			} else throw "Card without type (DOOR\TREASURE)";
+	});
+	d.plr[FOE].deck[EQUIP].clear();
+	
+	std::for_each(
+		d.plr[HELP].deck[EQUIP].begin(),
+		d.plr[HELP].deck[EQUIP].end(),
+		[this](const int& c){
+			if((*map)[c].CardType()&DOOR){
+				d.rd.push_back(c);
+			} else if((*map)[c].CardType()&TREASURE) {
+				d.rt.push_back(c);
+			} else throw "Card without type (DOOR\TREASURE)";
+	});
+	d.plr[HELP].deck[EQUIP].clear();
+}
 bool Model::DoCombat(){
 	int score=0;
-	bool warrior;
+	bool warrior=false;
 	for(std::vector<int>::iterator it=d.inCombat.begin();it!=d.inCombat.end();++it){
-		std::for_each(d.plr[*it].deck[EQUIP].begin(), d.plr[*it].deck[EQUIP].end(), [this,&it,&score](const int &c) {
-			if ( (*map)[d.plr[*it].deck[EQUIP].at(c)].CardType()&(ITEM|STRATEGYCOMBAT) ) { score+=(*map)[d.plr[*it].deck[EQUIP].at(c)].Combat(); }
+		std::for_each(d.plr[*it].deck[EQUIP].begin(), d.plr[*it].deck[EQUIP].end(), [this,&it,&score, &warrior](const int &c) {
+			if ( (*map)[c].CardType()&(ITEM|STRATEGYCOMBAT) ) { score+=(*map)[c].Combat(); }
 			score+=d.plr[*it].level;
+			if ((WARRIOR|SUPERWARRIOR)&CheckSetting(d,map,*it)) warrior=true;
 		});
 	}
 	std::for_each(d.plr[HELP].deck[EQUIP].begin(), d.plr[HELP].deck[EQUIP].end(), [&score,this](const int &c) {
-		if ( (*map)[d.plr[HELP].deck[EQUIP].at(c)].CardType()&(ITEM|STRATEGYCOMBAT|BEAST) ) { score+=(*map)[d.plr[HELP].deck[EQUIP].at(c)].Combat(); }
+		if ( (*map)[c].CardType()&(ITEM|STRATEGYCOMBAT|BEAST) ) { score+=(*map)[c].Combat(); }
 	});
 	std::for_each(d.plr[FOE].deck[EQUIP].begin(), d.plr[FOE].deck[EQUIP].end(), [&score,this](const int &c) {
-		if ( (*map)[d.plr[FOE].deck[EQUIP].at(c)].CardType()&(ITEM|STRATEGYCOMBAT|BEAST) ) { score-=(*map)[d.plr[FOE].deck[EQUIP].at(c)].Combat(); }
+		if ( (*map)[c].CardType()&(ITEM|STRATEGYCOMBAT|BEAST) ) { score-=(*map)[c].Combat(); }
 	});
-	if (WARRIOR&CheckSetting(d,map,d.inCombat[d.currentInCombat])) {
-		return score>0 ? true : false;
-	} else {
-		return score>=0 ? true : false;
-	}
+	if (warrior) ++score;
+	return score>0;
 }

@@ -28,7 +28,7 @@ struct StrategyAct {
 	virtual void Handle(ModelData*d, std::map<int, Card>* const map, int pl)=0;
 };
 struct StrategyEscape {
-	virtual bool Handle(ModelData*d, std::map<int, Card>* const map)=0;
+	virtual int Handle(ModelData*d, std::map<int, Card>* const map)=0;
 };
 struct StrategyCombat {
 	int n;
@@ -108,16 +108,14 @@ public:
 	int GainCard()const{if(beast) return beast->GainCard(); else throw "Beast GainCard bad access";}
 	int GainLevel()const{if(beast) return beast->GainLevel(); else throw "Beast GainLevel bad access";}
 	int Level()const{if(beast) return beast->Level(); else throw "Beast Level bad access";}
-	void Swap(CardPosition from, CardPosition to)const{if(ss) return ss->Handle(d,map,from,to); else throw "StrategySwap bad access";}
+	void Swap(CardPosition from, CardPosition to)const{if(ss) ss->Handle(d,map,from,to); else throw "StrategySwap bad access";}
 
-	void Act(const int &pl)const{if(sa) return sa->Handle(d,map,pl); else throw "StrategyAct bad access";}
+	void Act(const int &pl)const{if(sa) sa->Handle(d,map,pl); else throw "StrategyAct bad access";}
 
 	int Combat() const;
-//	bool Escape() {return se->Handle(d, map);}
+	int Escape() const{if(se) return se->Handle(d,map); else throw "StrategyEscape bad access";}
 	void Win() const;
 };
-
-
 
 class Cards{
 	Cards();

@@ -48,6 +48,7 @@ int Card::Combat() const {
 
 }
 
+
 struct D3872 : public StrategyDefeat{
 	void Handle(ModelData*d){
 

@@ -20,6 +20,7 @@ enum CardType : unsigned long long {
 	STRATEGYWIN=1<<8,
 	STRATEGYPREPARATION=1<<9,
 	STRATEGYCOMBAT=1<<10,
+	AFTERESCAPE=1<<16,
 	STRATEGYSWAP=1<<17,
 
 	DELETEAFTERCOMBAT=1<<18,
@@ -122,6 +123,7 @@ struct Snapshot{
 	int plrTurn;
 	bool event;
 	int dice;
+	bool escape;
 	std::vector<int> inCombat;
 	int currentInCombat;
 };
@@ -136,6 +138,7 @@ struct ModelData{
 	int plrTurn;
 	Phase phase;
 	int dice;
+	bool escape;
 	GameEvent *event;
 	std::vector<int> inCombat;
 	int currentInCombat;

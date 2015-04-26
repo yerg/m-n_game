@@ -86,7 +86,7 @@ void Munchkin::ShowCard(int id, int x, int y){
 void Munchkin::ZoomCard(int id){
 	if (id>=0){
 		graphics->DrawImage(card_map[id/10],  11.1*cW, 0, (id%5)*mapW/5, (id%10)>4 ? mapH/2 : 0,          mapW/5,  mapH/2, cardRatio*wH, wH);
-	} //wW-cardRatio*wH   as alternate x parameter(for allign to right border)
+	} //wW-cardRatio*wH   as alternate argument 'x' (for allign to right border)
 }
 
 void Munchkin::FillLine(const CardGroup &vectorName, const int &playerNumber, const double &col){ 
@@ -208,11 +208,6 @@ void Munchkin::UpdateCounters(){
 void Munchkin::ReDraw(){
 
 	snapshot=model->GetData(cp);
-	if (snapshot.phase!=phase) {
-		std::cout<<std::endl<<snapshot.phase<<"  "<<cp-FIRSTPLAYER+1;
-		phaseClicked=false;
-	}
-	phase=snapshot.phase;
 	graphics->GetWindowSize(wW, wH);
 	cH=wH/5.5;
 	cW=cardRatio*cH;
