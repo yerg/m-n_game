@@ -67,7 +67,7 @@ Setting CheckSetting(ModelData& d, std::map<int, Card>* map, int pl) {
 	if ( (classes>2) || ((classes==2) && (!(tmp&MULTICLASS))) || ((classes<1)&&(tmp&MULTICLASS)) ) throw "Bad classes math";
 	if ( (races>2) || ((races==2)&&(!(tmp&MULTIRACE))) || ((races<1)&&(tmp&MULTIRACE)) ) throw "Bad races math";
 
-	if (classes==1 && tmp&MULTIRACE) {
+	if (races==1 && tmp&MULTIRACE) {
 		if (tmp&DWARFCARD){ stg=stg|SUPERDWARF;
 		} else if (tmp&ELFCARD){ stg=stg|SUPERELF;
 		} else if (tmp&HALFLINGCARD){ stg=stg|SUPERHALFLING; 
@@ -123,6 +123,7 @@ void Model::GiveToAll(int nd, int nt){
 void Model::StartGame(int n){
 	map=Cards::GetMap(&d);
 	d.totalplayers=n+FIRSTPLAYER;
+	d.plr.resize(d.totalplayers);
 	phaseAdjust.assign(d.totalplayers, 0);
 	cardCounter.assign(d.totalplayers, 0);
 	
@@ -452,10 +453,7 @@ void Model::EndPhase(Phase phaseToClose, int cpIn){
 			}
 			break;
 		case CHARITY :
-			if ((cp==d.plrTurn)&&(d.plr[cp].deck[HAND].size()<=5)) {
-				if(d.plrTurn!=d.totalplayers) ++d.plrTurn; else d.plrTurn=FIRSTPLAYER;
-				d.phase=BEGIN; throw "Bad CHARITY Move block";
-			}
+			if ((cp==d.plrTurn)&&(d.plr[cp].deck[HAND].size()<=5)) throw "Bad CHARITY Move block";
 			break;
 
 		}
@@ -473,10 +471,12 @@ void Model::FoldFrom(){
 void Model::CardCounterReset(){
 	int minLevel=10;
 	cardCounter.assign(d.totalplayers,0);
-	for (int i=FIRSTPLAYER; i<=d.totalplayers; i++) {
+	for (int i=FIRSTPLAYER; i<d.totalplayers; i++) {
 		if (d.plr[i].level<minLevel) minLevel=d.plr[i].level;
 	}
-	
+	for (int i=FIRSTPLAYER; i<d.totalplayers; i++) {
+		if (d.plr[i].level==minLevel) cardCounter[i]=1;
+	}
 }
 void Model::ClearAfterCombat(){
 	std::vector<int> *currentVector;

@@ -63,8 +63,6 @@ void Munchkin::StartSettings()
 		strcat(filename, ".bmp");
 		dices[i]=graphics->NewImage(filename);
 	}
-
-
 	mapW=card_map[0]->GetWidth();
 	mapH=card_map[0]->GetHeight();
 	cardRatio=static_cast<double>(mapW/5)/static_cast<double>(mapH/2);
@@ -208,6 +206,8 @@ void Munchkin::UpdateCounters(){
 void Munchkin::ReDraw(){
 
 	snapshot=model->GetData(cp);
+	if (snapshot.phase!=phase) phaseClicked=false;
+	phase=snapshot.phase;
 	graphics->GetWindowSize(wW, wH);
 	cH=wH/5.5;
 	cW=cardRatio*cH;
