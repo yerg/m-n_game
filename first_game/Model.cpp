@@ -465,7 +465,7 @@ void Model::FoldFrom(){
 		d.rd.push_back(*itF);
 	} else if (fromType&TREASURE) {
 		d.rt.push_back(*itF);
-	} else throw "Card is without DOOR\TREASURE type";
+	} else throw "Card is without DOOR\\TREASURE type";
 	d.plr.at(from.playerNumber).deck[from.vectorName].erase(d.plr.at(from.playerNumber).deck[from.vectorName].begin()+from.position);
 }
 void Model::CardCounterReset(){
