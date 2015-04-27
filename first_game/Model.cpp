@@ -496,7 +496,7 @@ void Model::ClearAfterCombat(){
 				d.rd.push_back(c);
 			} else if((*map)[c].CardType()&TREASURE) {
 				d.rt.push_back(c);
-			} else throw "Card without type (DOOR\TREASURE)";
+			} else throw "Card without type (DOOR\\TREASURE)";
 	});
 	d.plr[FOE].deck[EQUIP].clear();
 	
@@ -508,7 +508,7 @@ void Model::ClearAfterCombat(){
 				d.rd.push_back(c);
 			} else if((*map)[c].CardType()&TREASURE) {
 				d.rt.push_back(c);
-			} else throw "Card without type (DOOR\TREASURE)";
+			} else throw "Card without type (DOOR\\TREASURE)";
 	});
 	d.plr[HELP].deck[EQUIP].clear();
 }
