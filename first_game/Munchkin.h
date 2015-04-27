@@ -70,8 +70,7 @@ private:
 	double cardRatio;
 
 	vMap mapOfItems;
-	
-
+	Phase phase;
 	void ShowSelect(int x, int y);
 	void ShowCard(int id, int x, int y);
 	void ZoomCard(int id);
