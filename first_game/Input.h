@@ -26,9 +26,11 @@ public:
 	bool IsKeyDown(byte key);
 	bool IsKeyUp(byte key);
 	byte GetPressedKey();
-	void RegisterUserEvent();
-	void PushUserEvent();
-	bool IsUserEvent();
+
+//	void RegisterUserEvent();
+//	void PushUserEvent();
+//	bool IsUserEvent();
+
 	bool IsExit();
 };
 

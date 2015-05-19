@@ -56,6 +56,8 @@ private:
 	Image* turn;
 	(Image* dices)[6];
 
+	int refresh;
+
 	std::shared_ptr<ModelHandler> model;
 	Snapshot snapshot;
 	bool phaseClicked;

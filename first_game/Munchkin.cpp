@@ -216,6 +216,7 @@ void Munchkin::RefreshData(){
 	snapshot=model->GetData(cp);
 	if (snapshot.phase!=phase) phaseClicked=false;
 	phase=snapshot.phase;
+	refresh=false;
 }
 
 void Munchkin::Start()
@@ -237,13 +238,12 @@ void Munchkin::Start()
 }
 
 void Munchkin::UpdateView(){
-	input->PushUserEvent();
+	refresh=true;
 }
 
 void Munchkin::Update()
 {
 	int x=0, y=0;
-	int refresh=false;
 	if(input->IsExit()) {
 		game->Exit();
 	}
@@ -262,10 +262,7 @@ void Munchkin::Update()
 	
 	if(input->IsMouseButtonDown(1)) {							//Left-click
 
-		while(!(input->IsMouseButtonUp(1))){
-			input->Update();
-			if (input->IsUserEvent()) refresh=true;
-		}														//Freeze until button up prevents recur of next chunk
+		while(!(input->IsMouseButtonUp(1))){input->Update();}														//Freeze until button up prevents recur of next chunk
 		
 		x=input->GetButtonDownCoords().x;
 		y=input->GetButtonDownCoords().y;
@@ -273,7 +270,6 @@ void Munchkin::Update()
 		vMap::iterator it = find_if(mapOfItems.begin(), mapOfItems.end(),FindCard(x,y));
 		if (it!=mapOfItems.end()) (*it)->OnClickL();
 	}
-	if (input->IsUserEvent()) refresh=true;
 	if (refresh) RefreshData();
 	ReDraw();
 }
