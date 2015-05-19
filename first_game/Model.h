@@ -56,13 +56,16 @@ void GiveTreasure(ModelData& d, int n, int pl);
 Setting CheckSetting(ModelData& d, std::map<int, Card>* map, int pl);
 void CheckEquip(ModelData& d, std::map<int, Card>* map, int pl);
 
-
+class Munchkin;
 class ModelHandler{
 	std::unique_ptr<Model> model;
 	mutable int semaphore;
+	std::vector<Munchkin*> observers;
 	void Lock() const;
+	void Notify();
 public:
 	ModelHandler(int n);
+	void Attach(Munchkin * observer);
 	Snapshot GetData(const int &cp) const;
 	void TryMove(const CardPosition &from, const CardPosition &to, const int &cp);
 	void EndPhase(const Phase &phaseToClose, const int &cp);

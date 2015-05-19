@@ -7,6 +7,7 @@ bool Munchkin::FindCard::operator()(const std::unique_ptr<MapItem> &a) const{
 
 void Munchkin::StartSettings()
 {
+	model->Attach(this);
 #pragma warning (push) 
 #pragma warning (disable:4996)
 	input = game->GetInput();
@@ -204,16 +205,17 @@ void Munchkin::UpdateCounters(){
 }
 
 void Munchkin::ReDraw(){
-
-	snapshot=model->GetData(cp);
-	if (snapshot.phase!=phase) phaseClicked=false;
-	phase=snapshot.phase;
 	graphics->GetWindowSize(wW, wH);
 	cH=wH/5.5;
 	cW=cardRatio*cH;
 	ShowMap();
 	if((zoomed>=0)&&(zoomed<170)) ZoomCard(zoomed);
 	graphics->Flip();
+}
+void Munchkin::RefreshData(){
+	snapshot=model->GetData(cp);
+	if (snapshot.phase!=phase) phaseClicked=false;
+	phase=snapshot.phase;
 }
 
 void Munchkin::Start()
@@ -230,12 +232,18 @@ void Munchkin::Start()
 		ep=FIRSTPLAYER;
 	}
 	phaseClicked=false;
+	RefreshData();
 	ReDraw();
+}
+
+void Munchkin::UpdateView(){
+	input->PushUserEvent();
 }
 
 void Munchkin::Update()
 {
 	int x=0, y=0;
+	int refresh=false;
 	if(input->IsExit()) {
 		game->Exit();
 	}
@@ -254,7 +262,10 @@ void Munchkin::Update()
 	
 	if(input->IsMouseButtonDown(1)) {							//Left-click
 
-		while(!(input->IsMouseButtonUp(1))){input->Update();}	//Freeze until button up prevents recur of next chunk
+		while(!(input->IsMouseButtonUp(1))){
+			input->Update();
+			if (input->IsUserEvent()) refresh=true;
+		}														//Freeze until button up prevents recur of next chunk
 		
 		x=input->GetButtonDownCoords().x;
 		y=input->GetButtonDownCoords().y;
@@ -262,7 +273,8 @@ void Munchkin::Update()
 		vMap::iterator it = find_if(mapOfItems.begin(), mapOfItems.end(),FindCard(x,y));
 		if (it!=mapOfItems.end()) (*it)->OnClickL();
 	}
-
+	if (input->IsUserEvent()) refresh=true;
+	if (refresh) RefreshData();
 	ReDraw();
 }
 

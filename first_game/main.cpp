@@ -21,9 +21,8 @@ int main(int argc, char* argv[]) {
 	arg.model=std::make_shared<ModelHandler>(arg.totalplayers);
 	arg.cp=1;
 
-	InitVideo();
-	
 	SDL_Thread* Player2 = SDL_CreateThread(MunchkinWindow,"Player2",&arg);
+	
 	arg1=arg;
 	arg1.cp=0;
 	SDL_Delay(5000);
@@ -36,6 +35,7 @@ int main(int argc, char* argv[]) {
 }
 
 int MunchkinWindow (void* a){
+	InitVideo();
 	Game game;
 	return game.Execute(new Munchkin((*(Arguments*)a).model,(*(Arguments*)a).totalplayers,(*(Arguments*)a).cp),WINDOWH*2,WINDOWH,"Munchkin");
 }

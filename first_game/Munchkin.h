@@ -86,6 +86,10 @@ private:
 	void StartSettings();
 	void ReDraw();
 	
+	void UpdateView();
+	void RefreshData();
+
+	friend class ModelHandler;
 	friend class MapItem;
 	friend class ButtonItem; 
 	friend class BindedToVector;	

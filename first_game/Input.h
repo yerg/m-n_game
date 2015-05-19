@@ -14,7 +14,9 @@ class Input
 {
 private:
 	SDL_Event evt;
+	SDL_Event userEvt;
 public:
+	Input();
 	void Update();
 
 	bool IsMouseButtonDown(byte key);
@@ -24,7 +26,9 @@ public:
 	bool IsKeyDown(byte key);
 	bool IsKeyUp(byte key);
 	byte GetPressedKey();
-
+	void RegisterUserEvent();
+	void PushUserEvent();
+	bool IsUserEvent();
 	bool IsExit();
 };
 

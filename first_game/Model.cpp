@@ -12,11 +12,13 @@ Snapshot ModelHandler::GetData(const int &cp) const{
 void ModelHandler::TryMove(const CardPosition &from, const CardPosition &to, const int &cp){
 	Lock();
 	model->TryMove(from, to, cp);
+	Notify();
 	--semaphore;
 }
 void ModelHandler::EndPhase(const Phase &phaseToClose, const int &cp){
 	Lock();
 	model->EndPhase(phaseToClose, cp);
+	Notify();
 	--semaphore;
 }
 void ModelHandler::Lock() const{
@@ -24,6 +26,12 @@ void ModelHandler::Lock() const{
 		--semaphore;
 		SDL_Delay(100+rand()%100);
 	}
+}
+void ModelHandler::Attach(Munchkin * observer){
+	observers.push_back(observer);
+}
+void ModelHandler::Notify(){
+	std::for_each(observers.begin(),observers.end(),[](Munchkin* obs){obs->UpdateView();});
 }
 
 void GiveDoor(ModelData& d, int n, int pl){

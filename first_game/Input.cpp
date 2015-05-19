@@ -1,5 +1,27 @@
 #include "Input.h"
 
+Input::Input(){
+	SDL_EventState(SDL_KEYDOWN,SDL_DISABLE);
+	SDL_EventState(SDL_KEYUP,SDL_DISABLE);
+	SDL_EventState(SDL_MOUSEMOTION,SDL_DISABLE);
+	RegisterUserEvent();
+}
+void Input::RegisterUserEvent(){
+	Uint32 myEventType = SDL_RegisterEvents(1);
+	if (myEventType != ((Uint32)-1)) {
+	    userEvt.type = myEventType;
+	    userEvt.user.code = 0;
+	    userEvt.user.data1 = NULL;
+	    userEvt.user.data2 = NULL;
+	}
+}
+void Input::PushUserEvent(){
+	SDL_PushEvent(&userEvt);
+}
+bool Input::IsUserEvent(){
+	return (evt.type == SDL_USEREVENT);
+}
+
 void Input::Update()
 {
 	while(SDL_PollEvent(&evt));

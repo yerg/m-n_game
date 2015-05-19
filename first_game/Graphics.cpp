@@ -2,6 +2,7 @@
 Graphics::Graphics(int width, int height, const char *title)
 {
 	mainWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,	width, height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+	
 	renderer = SDL_CreateRenderer(mainWindow, -1, 0);
 }
 
